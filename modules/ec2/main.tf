@@ -24,6 +24,7 @@ resource "aws_instance" "jenkins" {
   ami                    = var.jenkins-ami
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.jenkins-security.id]
+  subnet_id              = [aws_subnet.public-block.id]
   
   user_data = <<-EOF
               #!/bin/bash
