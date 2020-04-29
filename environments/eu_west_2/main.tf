@@ -13,6 +13,7 @@ module "jenkins-ec2" {
   region      = var.region
   jenkins-sec = ["${module.eks_sec_grps.aws_jenkins_sg_id}"]
   jenkins-subnet = module.project-vpc.public_block1_id
+  jenkins-key = "qapetclinic"
 }
 
 module "eks_sec_grps" {
