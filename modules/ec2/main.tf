@@ -3,6 +3,7 @@ resource "aws_instance" "jenkins" {
   instance_type          = "t2.micro"
   vpc_security_group_ids = var.jenkins-sec
   subnet_id              = var.jenkins-subnet
+  key_name               = var.jenkins-key
   
   user_data = <<-EOF
               #!/bin/bash

@@ -12,11 +12,13 @@ resource "aws_subnet" "public-block1" {
   cidr_block        = var.pub-sub-block1
   availability_zone = data.aws_availability_zones.available.names[0]
   vpc_id            = aws_vpc.vpc-module-test.id
+  map_public_ip_on_launch = true
 }
 resource "aws_subnet" "public-block2" {
   cidr_block        = var.pub-sub-block2
   availability_zone = data.aws_availability_zones.available.names[1]
   vpc_id            = aws_vpc.vpc-module-test.id
+  map_public_ip_on_launch = true
 }
 resource "aws_internet_gateway" "vpc-igw" {
   vpc_id = aws_vpc.vpc-module-test.id
