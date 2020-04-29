@@ -25,10 +25,12 @@ module "eks_sec_grps" {
   source = "../../modules/sec_grps"
   name = "pet_eks_secgrp"
   vpc_id = module.project-vpc.vpc_id
+  region      = var.region
 }
 
 module "project-eks-cluster" {
   source = "../../modules/eks"
   subnets = ["${module.project-vpc.public_subnetA_id}", "${module.project-vpc.public_subnetB_id}"]
   secgroups = module.eks_sec_grps.aws_wsg_id
+  region      = var.region
 }
