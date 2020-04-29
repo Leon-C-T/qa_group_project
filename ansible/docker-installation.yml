@@ -1,0 +1,45 @@
+
+- name: Build an image and push it to a private repo
+  docker_image:
+    build:
+      path: ./project-latte/spring-petclinic-angular
+    name: thenu97/frontend
+    tag: latest
+    push: yes
+    source: build
+
+- name: Archive image
+  docker_image:
+    name: registry.ansible.com/chouseknecht/sinatra
+    tag: v1
+    archive_path: my_sinatra.tar
+    source: local
+
+- name: Load image from archive and push to a private registry
+  docker_image:
+    name: localhost:5000/myimages/sinatra
+    tag: v1
+    push: yes
+    load_path: my_sinatra.tar
+    source: load
+
+- name: Build image and with build args
+  docker_image:
+    name: myimage
+    build:
+      path: /path/to/build/dir
+      args:
+        log_volume: /var/log/myapp
+        listen_port: 8080
+    source: build
+
+- name: Build image using cache source
+  docker_image:
+    name: myimage:latest
+    build:
+      path: /path/to/build/dir
+      # Use as cache source for building myimage
+      cache_from:
+        - nginx:latest
+        - alpine:3.8
+    source: build
