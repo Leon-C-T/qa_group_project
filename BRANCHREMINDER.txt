@@ -1,0 +1,15 @@
+This should stay in the dev branch until project completion
+
+Proposed structure:
+
+Master
+|\
+| \
+|  dev
+|  |\  \
+|  | \  \
+|  |  T  J
+|  |  |  |
+      *  *
+
+working feature branches: T(terraform) and J(jenkins)
