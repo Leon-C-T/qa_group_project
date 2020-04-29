@@ -8,8 +8,13 @@ resource "aws_vpc" "vpc-module-test" {
 data "aws_availability_zones" "available" {
   state = "available"
 }
-resource "aws_subnet" "public-block" {
-  cidr_block        = var.pub-sub-block
+resource "aws_subnet" "public-block1" {
+  cidr_block        = var.pub-sub-block1
+  availability_zone = data.aws_availability_zones.available.names[0]
+  vpc_id            = aws_vpc.vpc-module-test.id
+}
+resource "aws_subnet" "public-block2" {
+  cidr_block        = var.pub-sub-block2
   availability_zone = data.aws_availability_zones.available.names[0]
   vpc_id            = aws_vpc.vpc-module-test.id
 }
@@ -30,6 +35,10 @@ resource "aws_route_table" "vpc-rt" {
   }
 }
 resource "aws_route_table_association" "pub-sub-rta" {
-  subnet_id      = aws_subnet.public-block.id
+  subnet_id      = aws_subnet.public-block1.id
+  route_table_id = aws_route_table.vpc-rt.id
+}
+resource "aws_route_table_association" "pub-sub-rtb" {
+  subnet_id      = aws_subnet.public-block2.id
   route_table_id = aws_route_table.vpc-rt.id
 }
