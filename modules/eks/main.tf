@@ -1,6 +1,6 @@
 resource "aws_eks_cluster" "petclinic_eks" {
   name     = "PetClinic"
-  role_arn = "${aws_iam_role.petrole.arn}"
+  role_arn = aws_iam_role.petrole.arn
 
   vpc_config {
     endpoint_private_access = false
@@ -11,8 +11,8 @@ resource "aws_eks_cluster" "petclinic_eks" {
   }
 
     depends_on = [
-    "aws_iam_role_policy_attachment.pet-AmazonEKSClusterPolicy",
-    "aws_iam_role_policy_attachment.pet-AmazonEKSServicePolicy",
+    aws_iam_role_policy_attachment.pet-AmazonEKSClusterPolicy,
+    aws_iam_role_policy_attachment.pet-AmazonEKSServicePolicy,
   ]
 }
 
@@ -38,10 +38,10 @@ POLICY
 
 resource "aws_iam_role_policy_attachment" "pet-AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = "${aws_iam_role.petrole.name}"
+  role       = aws_iam_role.petrole.name
 }
 
 resource "aws_iam_role_policy_attachment" "pet-AmazonEKSServicePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
-  role       = "${aws_iam_role.petrole.name}"
+  role       = aws_iam_role.petrole.name
 }
