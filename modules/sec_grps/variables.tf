@@ -28,3 +28,6 @@ variable "ingress_ports" {
   description = "List of ingress ports"
   default     = [80,9966,4200]
 }
+
+variable "region" {}
+

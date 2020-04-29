@@ -1,5 +1,5 @@
 resource "aws_vpc" "vpc-module-test" {
-  cidr_block           = var.vpc-cidr-block
+  cidr_block           =  var.vpc-cidr-block
   enable_dns_hostnames = true
   tags = {
     Name = "vpc-module-test"
@@ -15,7 +15,7 @@ resource "aws_subnet" "public-block1" {
 }
 resource "aws_subnet" "public-block2" {
   cidr_block        = var.pub-sub-block2
-  availability_zone = data.aws_availability_zones.available.names[0]
+  availability_zone = data.aws_availability_zones.available.names[1]
   vpc_id            = aws_vpc.vpc-module-test.id
 }
 resource "aws_internet_gateway" "vpc-igw" {
