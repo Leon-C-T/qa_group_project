@@ -15,7 +15,7 @@
 
     - name: Install access to the Jenkins apt repository
       apt_repository:
-        repo: deb http://pkg.jenkins.io/debian-stable binary/
+        repo: deb http://pkg.jenkins.io/debian binary/
         state: present
         filename: 'jenkins-stable'
         update_cache: yes

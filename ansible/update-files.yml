@@ -1,0 +1,12 @@
+- hosts: terraform
+  tasks:
+  - name: Update terraform env files
+    copy:
+      src: /var/lib/jenkins/workspace/latte/environments
+      dest: /qa_group_project/environments
+
+  - name: Update terraform mod files
+    copy:
+      src: /var/lib/jenkins/workspace/latte/modules
+      dest: /qa_group_project/modules
+      
