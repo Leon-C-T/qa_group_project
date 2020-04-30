@@ -1,0 +1,26 @@
+version: "3.3"
+
+services:
+  nginx:
+    image: amranlab/nginx
+    ports:
+      - 80:80
+    container_name: nginx
+
+  backend:
+    image: springcommunity/spring-petclinic-rest
+    ports:
+      - 9966:9966
+    container_name: backend
+
+  frontend:
+    web: 
+      build:
+        context: thenu97/frontend
+          dockerfile: Dockerfile
+    image: thenu97/frontend:1
+    depends_on:
+      - backend
+    ports:
+      - 4200:4200
+    container_name: frontend
