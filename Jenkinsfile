@@ -30,12 +30,5 @@ pipeline{
                 sh './scripts/kubectl.sh'
             }
         }
-        stage("Update"){
-            steps{
-                sh 'echo "copying and pasting updated terraform files"'
-                sh 'chmod 775 ./scripts/*'
-                sh 'ansible-playbook -i ./ansible/configure.conf ./ansible/update-files.yml'
-            }
-        }
     }
 }
