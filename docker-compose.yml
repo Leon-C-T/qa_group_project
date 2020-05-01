@@ -14,7 +14,7 @@ services:
     container_name: backend
 
   frontend:
-    image: thenu97/frontend:1
+    image: amranlab/frontend
     depends_on:
       - backend
     ports:
