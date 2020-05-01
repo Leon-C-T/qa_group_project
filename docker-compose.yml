@@ -14,10 +14,6 @@ services:
     container_name: backend
 
   frontend:
-    web: 
-      build:
-        context: thenu97/frontend
-          dockerfile: Dockerfile
     image: thenu97/frontend:1
     depends_on:
       - backend
