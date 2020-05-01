@@ -53,6 +53,11 @@ module "project-lambda-functions" {
   region                = var.region
 }
 
+module "dlm-lifecycle-deletion" {
+  source                = "../../modules/lifecycle"
+  region                = var.region
+}
+
 module "project-cloudwatch-monitoring" {
   source       = "../../modules/cloudwatch"
   jenkins-id   = module.ec2.jenkins-id

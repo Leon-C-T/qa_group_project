@@ -41,19 +41,22 @@ resource "aws_cloudwatch_dashboard" "main" {
 
 resource "aws_cloudwatch_event_rule" "rate-schedule" {
   name = "cloudwatch-event-lambda-snapshot"
-  description = "This event will run every 12 hours"
-  schedule_expression = rate(12 hours)
+  description = "This event will run every 6 hours"
+  schedule_expression = rate(6 hours)
   is_enabled = true
 }
+
 resource "aws_cloudwatch_event_target" "snapshot-target" {
   rule = aws_cloudwatch_event_rule.rate-schedule.name
   arn  = var.snapshot-arn
 }
 
 resource "aws_cloudwatch_event_target" "image-target" {
-  target_id = "image"
-  rule      = "${aws_cloudwatch_event_rule.image.name}"
-  arn       = var.image-arn
+  target_id  = "image"
+  rule       = "${aws_cloudwatch_event_rule.image.name}"
+  arn        = var.image-arn
+  is_enabled = true
+}
 
 resource "aws_cloudwatch_event_rule" "image" {
   name        = "check-for-new-snapshots"
