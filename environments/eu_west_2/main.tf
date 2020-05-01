@@ -29,3 +29,31 @@ module "project-eks-cluster" {
   secgroups = ["${module.all_sec_grps.aws_wsg_id}"]
   region    = var.region
 }
+
+resource "aws_autoscaling_policy" "eks-scale" {
+  name                   = "eks-scale"
+  scaling_adjustment     = 3
+  policy_type            = "TargetTrackingScaling"
+  cooldown               = 300
+  autoscaling_group_name = module.project-eks-cluster.eks-asg-name
+
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+
+  target_value = 80.0
+  }
+}
+
+module "project-lambda" {
+  source    = "../../modules/lambda"
+  region    = var.region
+}
+
+module "project-cloudwatch-monitoring" {
+  source     = "../../modules/cloudwatch"
+  jenkins-id = module.ec2.jenkins-id
+  lambda-arn = module.lambda.
+  region     = var.region
+}
