@@ -46,14 +46,16 @@ resource "aws_autoscaling_policy" "eks-scale" {
   }
 }
 
-module "project-lambda" {
-  source    = "../../modules/lambda"
-  region    = var.region
+module "project-lambda-functions" {
+  source                = "../../modules/lambda"
+  lambda-subnet-ids     = ["${module.project-vpc.public_block1_id}", "${module.project-vpc.public_block2_id}"]
+  lambda-security-group = ["${module.all_sec_grps.aws_jenkins_sg_id}"]
+  region                = var.region
 }
 
 module "project-cloudwatch-monitoring" {
   source     = "../../modules/cloudwatch"
   jenkins-id = module.ec2.jenkins-id
-  lambda-arn = module.lambda.
+  lambda-arn = module.lambda.recovery-arn
   region     = var.region
 }
