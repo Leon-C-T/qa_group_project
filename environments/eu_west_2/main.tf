@@ -54,8 +54,9 @@ module "project-lambda-functions" {
 }
 
 module "project-cloudwatch-monitoring" {
-  source     = "../../modules/cloudwatch"
-  jenkins-id = module.ec2.jenkins-id
-  lambda-arn = module.lambda.recovery-arn
-  region     = var.region
+  source       = "../../modules/cloudwatch"
+  jenkins-id   = module.ec2.jenkins-id
+  snapshot-arn = module.lambda.snapshot-arn
+  recovery-arn = module.lambda.recovery-arn
+  region       = var.region
 }

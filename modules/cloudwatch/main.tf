@@ -39,6 +39,17 @@ resource "aws_cloudwatch_dashboard" "main" {
   EOF
 }
 
+resource "aws_cloudwatch_event_rule" "rate-schedule" {
+  name = "cloudwatch-event-lambda-snapshot"
+  description = "This event will run every 12 hours"
+  schedule_expression = rate(12 hours)
+  is_enabled = true
+}
+resource "aws_cloudwatch_event_target" "event_target" {
+  rule = aws_cloudwatch_event_rule.rate-schedule.name
+  arn  = var.snapshot-arn
+}
+
 resource "aws_cloudwatch_metric_alarm" "jenkins-health-alarm" {
   alarm_name          = "JenkinsAlarm"
   comparison_operator = "LessThanThreshold"
@@ -50,8 +61,8 @@ resource "aws_cloudwatch_metric_alarm" "jenkins-health-alarm" {
   statistic           = "Average"
   alarm_description   = "Is the Jenkins server healthy"
   actions_enabled     = "true"
-  alarm_actions       = var.lambda-arn
-  ok_actions          = var.lambda-arn
+  alarm_actions       = var.recovery-arn
+  ok_actions          = var.recovery-arn
   dimensions = {
     InstanceId = var.jenkins-id
   }

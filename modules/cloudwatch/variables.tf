@@ -2,4 +2,6 @@ variable "region" {}
 
 variable "jenkins-id" {}
 
-variable "lambda-arn" {}
+variable "snapshot-arn" {}
+
+variable "recovery-arn" {}
