@@ -58,5 +58,6 @@ module "project-cloudwatch-monitoring" {
   jenkins-id   = module.ec2.jenkins-id
   snapshot-arn = module.lambda.snapshot-arn
   recovery-arn = module.lambda.recovery-arn
+  image-arn    = module.lambda.image-arn
   region       = var.region
 }

@@ -2,28 +2,42 @@ resource "aws_lambda_function" "lambda-snapshot" {
   filename      = "../../payloads/snapshot.zip"
   function_name = "ec2_bidaily_snapshot"
   role          = aws_iam_role.iam_for_lambda.arn
-  handler       = "lambda_function.snapshot"
+  handler       = "lambda_function.lambda_handler"
   vpc_config {
       subnet_ids         = var.lambda-subnet-ids
       security_group_ids = var.lambda-security-group-ids
   }
 
   runtime = "python3.8"
-  timeout = 40
+  timeout = 10
+}
+
+resource "aws_lambda_function" "lambda-image" {
+  filename      = "../../payloads/image.zip"
+  function_name = "snapshot_image_converter"
+  role          = aws_iam_role.iam_for_lambda.arn
+  handler       = "lambda_function.lambda_handler"
+  vpc_config {
+      subnet_ids         = var.lambda-subnet-ids
+      security_group_ids = var.lambda-security-group-ids
+  }
+
+  runtime = "python3.8"
+  timeout = 5
 }
 
 resource "aws_lambda_function" "lambda-recovery" {
   filename      = "../../payloads/recovery.zip"
   function_name = "jenkins_recovery_function"
   role          = aws_iam_role.iam_for_lambda.arn
-  handler       = "lambda_function.recovery"
+  handler       = "lambda_function.lambda_handler"
   vpc_config {
       subnet_ids         = var.lambda-subnet-ids
       security_group_ids = var.lambda-security-group-ids
   }
 
   runtime = "python3.8"
-  timeout = 120
+  timeout = 10
 }
 
 resource "aws_iam_role" "iam_for_lambda" {

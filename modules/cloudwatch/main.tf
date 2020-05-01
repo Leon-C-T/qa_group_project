@@ -45,9 +45,38 @@ resource "aws_cloudwatch_event_rule" "rate-schedule" {
   schedule_expression = rate(12 hours)
   is_enabled = true
 }
-resource "aws_cloudwatch_event_target" "event_target" {
+resource "aws_cloudwatch_event_target" "snapshot-target" {
   rule = aws_cloudwatch_event_rule.rate-schedule.name
   arn  = var.snapshot-arn
+}
+
+resource "aws_cloudwatch_event_target" "image-target" {
+  target_id = "image"
+  rule      = "${aws_cloudwatch_event_rule.image.name}"
+  arn       = var.image-arn
+
+resource "aws_cloudwatch_event_rule" "image" {
+  name        = "check-for-new-snapshots"
+  description = "Checks for new snapshots and triggers image conversion"
+
+  event_pattern = <<PATTERN
+{
+  "source": [
+    "aws.ec2"
+  ],
+  "detail-type": [
+    "EBS Snapshot Notification"
+  ],
+  "detail": {
+    "event": [
+      "createSnapshot"
+    ],
+    "result": [
+      "succeeded"
+    ]
+  }
+}
+PATTERN
 }
 
 resource "aws_cloudwatch_metric_alarm" "jenkins-health-alarm" {
