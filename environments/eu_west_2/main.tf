@@ -30,21 +30,21 @@ module "project-eks-cluster" {
   region    = var.region
 }
 
-#resource "aws_autoscaling_policy" "eks-scale" {
-#  name                   = "eks-scale"
-#  scaling_adjustment     = 3
-#  policy_type            = "TargetTrackingScaling"
-#  cooldown               = 300
-#  autoscaling_group_name = module.project-eks-cluster.eks-asg-name[1]
-#
-#  target_tracking_configuration {
-#    predefined_metric_specification {
-#      predefined_metric_type = "ASGAverageCPUUtilization"
-#    }
-#
-#  target_value = 80.0
-#  }
-#}
+resource "aws_autoscaling_policy" "eks-scale" {
+ name                   = "eks-scale"
+ scaling_adjustment     = 3
+ policy_type            = "TargetTrackingScaling"
+ cooldown               = 300
+ autoscaling_group_name = module.project-eks-cluster.eks-asg-name
+
+ target_tracking_configuration {
+   predefined_metric_specification {
+     predefined_metric_type = "ASGAverageCPUUtilization"
+   }
+
+ target_value = 80.0
+ }
+}
 
 module "project-lambda-functions" {
   source                = "../../modules/lambda"
