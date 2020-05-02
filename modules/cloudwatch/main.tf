@@ -19,6 +19,7 @@ resource "aws_cloudwatch_dashboard" "main" {
               "${var.jenkins-id}"
             ]
           ],
+          "region":"${var.region}",
           "view": "timeSeries",
           "stacked": false,
           "title":"Jenkins Instance CPU"
@@ -36,6 +37,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           [ ".", ".", ".", "${var.jenkins-id}", { "id": "m2" } ],
           [ { "expression": "SUM(METRICS())", "label": "Sum of DiskReadbytes", "id": "e3" } ]
           ],
+          "region":"${var.region}",
           "view": "timeSeries",
           "stacked": false,
           "period":300,
