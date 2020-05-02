@@ -20,7 +20,7 @@ resource "aws_cloudwatch_dashboard" "main" {
             ]
           ],
           "period": 300,
-          "stat": "average",
+          "stat": "Average",
           "region":"${var.region}",
           "title":"Jenkins Instance CPU"
         }
@@ -103,8 +103,8 @@ resource "aws_cloudwatch_metric_alarm" "jenkins-health-alarm" {
   statistic           = "Average"
   alarm_description   = "Is the Jenkins server healthy"
   actions_enabled     = "true"
-  alarm_actions       = var.recovery-arn
-  ok_actions          = var.recovery-arn
+  alarm_actions       = var.topic-lambdarecovery-arn
+  #ok_actions          = var.recovery-arn  list of actions to execute when this alarm transitions into an OK state from any other state. Each action is specified as an Amazon Resource Name (ARN).
   dimensions = {
     InstanceId = var.jenkins-id
   }

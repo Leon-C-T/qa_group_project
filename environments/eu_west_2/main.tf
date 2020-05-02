@@ -32,9 +32,7 @@ module "project-eks-cluster" {
 
 resource "aws_autoscaling_policy" "eks-scale" {
  name                   = "eks-scale"
- scaling_adjustment     = 3
  policy_type            = "TargetTrackingScaling"
- cooldown               = 300
  autoscaling_group_name = module.project-eks-cluster.eks-asg-name
 
  target_tracking_configuration {
@@ -53,6 +51,11 @@ module "project-lambda-functions" {
   region                = var.region
 }
 
+module "project-sns-topics" {
+  source                = "../../modules/sns"
+  recovery-arn = "${module.project-lambda-functions.recovery-arn}"
+}
+
 module "dlm-lifecycle-deletion" {
   source                = "../../modules/lifecycle"
   region                = var.region
@@ -62,7 +65,8 @@ module "project-cloudwatch-monitoring" {
   source       = "../../modules/cloudwatch"
   jenkins-id   = module.jenkins-ec2.jenkins-id
   snapshot-arn = module.project-lambda-functions.snapshot-arn
-  recovery-arn = ["${module.project-lambda-functions.recovery-arn}"]
+  #topic-lambdarecovery-arn = ["${module.project-lambda-functions.recovery-arn}"]
+  topic-lambdarecovery-arn = ["${module.project-sns-topics.recoverytopic-arn}"]
   image-arn    = module.project-lambda-functions.image-arn
   region       = var.region
 }

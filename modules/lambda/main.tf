@@ -43,30 +43,46 @@ resource "aws_lambda_function" "lambda-recovery" {
 resource "aws_iam_role" "iam_for_lambda" {
   name = "Lambda-Role"
 
-  assume_role_policy = <<POLICY
+  assume_role_policy = <<EOF
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": {
-              "Service": "lambda.amazonaws.com"
-            },
-            "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-                "ec2:CreateNetworkInterface",
-                "ec2:DescribeNetworkInterfaces",
-                "ec2:DeleteNetworkInterface"
-            ]
-            
-            
-        }
-    ]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
 }
-POLICY
+EOF
 }
+#  assume_role_policy = <<POLICY
+#{
+#    "Version": "2012-10-17",
+#    "Statement": [
+#        {
+#            "Effect": "Allow",
+#            "Principal": {
+#              "Service": "lambda.amazonaws.com"
+#            },
+#            "Action": [
+#                "logs:CreateLogGroup",
+#                "logs:CreateLogStream",
+#                "logs:PutLogEvents",
+#                "ec2:CreateNetworkInterface",
+#                "ec2:DescribeNetworkInterfaces",
+#                "ec2:DeleteNetworkInterface"
+#            ]
+#            
+#            
+#        }
+#    ]
+#}
+#POLICY
+#}
 
 resource "aws_iam_role_policy_attachment" "AWSLambdaBasicExecutionRole" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
