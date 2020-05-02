@@ -25,23 +25,23 @@ resource "aws_cloudwatch_dashboard" "main" {
         }
       },
       {
-           "type":"metric",
-           "x":0,
-           "y":19,
-           "width":12,
-           "height":6,
-           "properties":{
-               "metrics":[
-               [ "AWS/EC2", "DiskReadBytes", "InstanceId", "${var.jenkins-id}",{ "id": "m1" } ],
-               [ ".", ".", ".", "${var.jenkins-id}", { "id": "m2" } ],
-               [ { "expression": "SUM(METRICS())", "label": "Sum of DiskReadbytes", "id": "e3" } ]
-               ],
-               "view": "timeSeries",
-               "stacked": false,
-               "period":300,
-               "stat":"Average",
-               "title":"EC2 Instance CPU"
-            }
+        "type":"metric",
+        "x":0,
+        "y":19,
+        "width":12,
+        "height":6,
+        "properties":{
+          "metrics":[
+          [ "AWS/EC2", "DiskReadBytes", "InstanceId", "${var.jenkins-id}",{ "id": "m1" } ],
+          [ ".", ".", ".", "${var.jenkins-id}", { "id": "m2" } ],
+          [ { "expression": "SUM(METRICS())", "label": "Sum of DiskReadbytes", "id": "e3" } ]
+          ],
+          "view": "timeSeries",
+          "stacked": false,
+          "period":300,
+          "stat":"Average",
+          "title":"EC2 Instance CPU"
+        }
       }
     ]
   }
