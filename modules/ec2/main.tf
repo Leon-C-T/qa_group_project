@@ -1,6 +1,6 @@
 resource "aws_instance" "jenkins" {
   ami                    = var.jenkins-ami
-  instance_type          = "t2.micro"
+  instance_type          = "t2.small"
   vpc_security_group_ids = var.jenkins-sec
   subnet_id              = var.jenkins-subnet
   key_name               = var.jenkins-key

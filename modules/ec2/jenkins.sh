@@ -9,4 +9,8 @@ sudo sh -c 'echo deb https://pkg.jenkins.io/debian binary/ > /etc/apt/sources.li
 sudo apt-get update
 #Install Jenkins
 sudo apt-get install jenkins -y
+#AWS-CLI
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+sudo apt install unzip -y
+sudo ./aws/install 
 sleep 30
