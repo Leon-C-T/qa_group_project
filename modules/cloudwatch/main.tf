@@ -1,48 +1,48 @@
-resource "aws_cloudwatch_dashboard" "main" {
-  dashboard_name = "my-dashboard"
-
-  dashboard_body = <<EOF
-  {
-   "widgets": [
-       {
-            "type":"metric",
-            "width":18,
-            "height":9,
-            "properties":{
-                "metrics":[
-                [ { "expression": "SEARCH('InstanceType="t2.small" Namespace="AWS/EC2" MetricName=\"CPUUtilization\"', 'Average', 300)", "id": "e1" } ]
-                ],
-                "view": "timeSeries",
-                "stacked": false,
-                "title":"EC2 Instance CPU"
-            }
-         }
-       {
-            "type":"metric",
-            "width":12,
-            "height":6,
-            "properties":{
-                "metrics":[
-                [ "AWS/EC2", "DiskReadBytes", "InstanceId", "i-123",{ "id": "m1" } ],
-                [ ".", ".", ".", "i-abc", { "id": "m2" } ],
-                [ { "expression": "SUM(METRICS())", "label": "Sum of DiskReadbytes", "id": "e3" } ]
-                ],
-                "view": "timeSeries",
-                "stacked": false,
-                "period":300,
-                "stat":"Average",
-                "title":"EC2 Instance CPU"
-            }
-         }
-   ]
-  }
-  EOF
-}
+#resource "aws_cloudwatch_dashboard" "main" {
+#  dashboard_name = "my-dashboard"
+#
+#  dashboard_body = <<EOF
+#  {
+#   "widgets": [
+#       {
+#            "type":"metric",
+#            "width":18,
+#            "height":9,
+#            "properties":{
+#                "metrics":[
+#                [ { "expression": "SEARCH('InstanceType="t2.small" Namespace="AWS/EC2" MetricName=\"CPUUtilization\"', 'Average', 300)", "id": "e1" } ]
+#                ],
+#                "view": "timeSeries",
+#                "stacked": false,
+#                "title":"EC2 Instance CPU"
+#            }
+#        },
+#       {
+#            "type":"metric",
+#            "width":12,
+#            "height":6,
+#            "properties":{
+#                "metrics":[
+#                [ "AWS/EC2", "DiskReadBytes", "InstanceId", "i-123",{ "id": "m1" } ],
+#                [ ".", ".", ".", "i-abc", { "id": "m2" } ],
+#                [ { "expression": "SUM(METRICS())", "label": "Sum of DiskReadbytes", "id": "e3" } ]
+#                ],
+#                "view": "timeSeries",
+#                "stacked": false,
+#                "period":300,
+#                "stat":"Average",
+#                "title":"EC2 Instance CPU"
+#            }
+#         }
+#   ]
+#  }
+#  EOF
+#}
 
 resource "aws_cloudwatch_event_rule" "rate-schedule" {
   name = "cloudwatch-event-lambda-snapshot"
   description = "This event will run every 6 hours"
-  schedule_expression = rate(6 hours)
+  schedule_expression = "rate(6 hours)" #cron(0 0 */6 ? * *)
   is_enabled = true
 }
 
@@ -53,9 +53,8 @@ resource "aws_cloudwatch_event_target" "snapshot-target" {
 
 resource "aws_cloudwatch_event_target" "image-target" {
   target_id  = "image"
-  rule       = "${aws_cloudwatch_event_rule.image.name}"
+  rule       = aws_cloudwatch_event_rule.image.name
   arn        = var.image-arn
-  is_enabled = true
 }
 
 resource "aws_cloudwatch_event_rule" "image" {

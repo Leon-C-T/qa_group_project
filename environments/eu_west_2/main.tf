@@ -30,26 +30,26 @@ module "project-eks-cluster" {
   region    = var.region
 }
 
-resource "aws_autoscaling_policy" "eks-scale" {
-  name                   = "eks-scale"
-  scaling_adjustment     = 3
-  policy_type            = "TargetTrackingScaling"
-  cooldown               = 300
-  autoscaling_group_name = module.project-eks-cluster.eks-asg-name
-
-  target_tracking_configuration {
-    predefined_metric_specification {
-      predefined_metric_type = "ASGAverageCPUUtilization"
-    }
-
-  target_value = 80.0
-  }
-}
+#resource "aws_autoscaling_policy" "eks-scale" {
+#  name                   = "eks-scale"
+#  scaling_adjustment     = 3
+#  policy_type            = "TargetTrackingScaling"
+#  cooldown               = 300
+#  autoscaling_group_name = module.project-eks-cluster.eks-asg-name[1]
+#
+#  target_tracking_configuration {
+#    predefined_metric_specification {
+#      predefined_metric_type = "ASGAverageCPUUtilization"
+#    }
+#
+#  target_value = 80.0
+#  }
+#}
 
 module "project-lambda-functions" {
   source                = "../../modules/lambda"
   lambda-subnet-ids     = ["${module.project-vpc.public_block1_id}", "${module.project-vpc.public_block2_id}"]
-  lambda-security-group = ["${module.all_sec_grps.aws_jenkins_sg_id}"]
+  lambda-security-group-ids = ["${module.all_sec_grps.aws_jenkins_sg_id}"]
   region                = var.region
 }
 
@@ -60,9 +60,9 @@ module "dlm-lifecycle-deletion" {
 
 module "project-cloudwatch-monitoring" {
   source       = "../../modules/cloudwatch"
-  jenkins-id   = module.ec2.jenkins-id
-  snapshot-arn = module.lambda.snapshot-arn
-  recovery-arn = module.lambda.recovery-arn
-  image-arn    = module.lambda.image-arn
+  jenkins-id   = module.jenkins-ec2.jenkins-id
+  snapshot-arn = module.project-lambda-functions.snapshot-arn
+  recovery-arn = ["${module.project-lambda-functions.recovery-arn}"]
+  image-arn    = module.project-lambda-functions.image-arn
   region       = var.region
 }

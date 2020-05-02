@@ -49,14 +49,18 @@ resource "aws_iam_role" "iam_for_lambda" {
     "Statement": [
         {
             "Effect": "Allow",
+            "Principal": {
+              "Service": "lambda.amazonaws.com"
+            },
             "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
-                "logs:PutLogEvents"
+                "logs:PutLogEvents",
                 "ec2:CreateNetworkInterface",
                 "ec2:DescribeNetworkInterfaces",
                 "ec2:DeleteNetworkInterface"
-            ],
+            ]
+            
             
         }
     ]
