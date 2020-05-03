@@ -233,7 +233,7 @@ Tracking was conducted daily by the group, and brought up in both standups and r
 
 This section aims to demonstrate how user interaction with the app is structured, as well as the interplay between the deployed containers.
 
-![User interaction diagram showing kubernetes architecture.](https://i.imgur.com/ULgKcHB.png)
+![User interaction diagram showing kubernetes architecture.](https://i.imgur.com/59ezyMf.png)
 
 As can be seen from the diagram, from a user perspective, they are only faced with the output of the frontend container, as balanced by the NGINX over the detailed EKS cluster. Nodes are scaled by terraform-set policy. NGINX also enables HTTPS authentication and dynamic traffic redirection
 
