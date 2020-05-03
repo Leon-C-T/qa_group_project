@@ -253,7 +253,7 @@ NGINX, listed as the tool used for 'live' production, is also a container, runni
 
 The process flow chosen in this project mirrors closely that used by DevOps engineers in genuine enterprise environments, and to detail this, a full DevOps toolchain analysis is included below.
 
-![DevOps toolchain and process flow diagram for project.](https://i.imgur.com/xzDgcVx.png)
+![DevOps toolchain and process flow diagram for project.](https://i.imgur.com/uItAJdW.png)
 
 Our project includes the necessary functionality, by way of tool integration and feedback to be handed over to a team for operations and continued development. As mentioned, an extension of this project enables the use of a fully serverless deployment solution, shown here by the option of a AWS CodePipeline CI/CD process.
 
