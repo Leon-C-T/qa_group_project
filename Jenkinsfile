@@ -6,8 +6,8 @@ pipeline{
                 sh 'echo "installing docker locally"'
                 sh 'chmod 775 ./scripts/*'
                 sh './scripts/before_installation.sh'
-                sh 'echo "adding jenkins to Docker"'
-                sh 'sudo usermod -aG docker $USER'
+                sh 'echo "building images and pushing it to DockerHub"'
+                sh './scripts/dockerauto.sh'
             }
         }
         stage("Test"){
@@ -15,7 +15,7 @@ pipeline{
                 sh 'echo "testing application locally"'
                 sh 'chmod 775 ./scripts/*'
                 sh './scripts/installation.sh'
-                sh 'docker-compose up -d --force-recreate'
+                sh 'docker-compose up -d'
                 sh 'sleep 30'
                 sh 'echo "checking URLs"'
                 sh './scripts/run_before.sh'

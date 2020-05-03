@@ -1,7 +1,8 @@
 import pytest
 import requests
+import os
 
-url = "ec2-35-177-109-163.eu-west-2.compute.amazonaws.com/"
+url = os.environ['url']
 
 ############################################################### testing url ###############################################################
 def test_urlmanager_home():
