@@ -10,5 +10,3 @@ sudo systemctl start docker
 sudo systemctl enable docker
 sudo systemctl status docker
 sudo apt update
-source ~/.bashrc
-sudo docker login --username=$DOCKER_USER --password=$DOCKER_PASS
