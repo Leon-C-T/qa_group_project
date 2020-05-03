@@ -352,7 +352,82 @@ The attached scaling group allows the scaling of the nodes in line with performa
 
 The node group sits within the EKS cluster and runs the production containers with the use of kubernetes. These containers are passed to the group by Jenkins executed CLI commands during the pipeline runtime. Vital to the deployment, without this provision, no pods could be deployed, and therefore no app could be delivered.
 
-#### 
+#### Amran: NGINX Kubernetes
+
+![Architecture showcase for the Kubernetes EKS interface](https://i.imgur.com/4ugbdkx.png)
+
+As the code snippet below does not lend itself to a flow-diagram, the explanation above highlights the location of this process within our core architecture. Note the linkage to either Jenkins or CodePipeline.
+
+```apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+spec:
+  selector:
+    app: nginx
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+```
+The above Kubernetes .YML file, alongside this: `aws eks update-kubeconfig --name <clusterName>` code snippet, allows the interface of the containers to the EKS node group, and provides the node balancing for the project. The presence of NGINX in this setting also ensures the provision of a website ARN (AWS provisioned DNS) if the node is connected to a public subnet within the VPN.
+
+The kubeconfig command, entered through the Jenkins terminal during pipeline runs, provides IAM authentication to kubernetes in order to connect to the EKS cluster, as well as permissions to modify it. Without this snippet, the interface between the deployment pipeline and the cluster would fail, and the app would not be deployed.
+
+#### Thenuja: Lambda AMI Manager
+
+![Lambda process flow](https://i.imgur.com/nb3OdCC.png)
+
+The above diagram demonstrates the algorithmic process flow for the image creation lambda function. Related code block included below.
+
+```def lambda_handler(event, context):
+    ec2_res = boto3.resource('ec2')
+    ec2_cli = boto3.client('ec2')
+    amis = ec2_cli.describe_images(Owners=['self'])
+    image_id = []
+    for ami in amis['Images']:
+        ami_id = ami['ImageId']
+        print(ami['ImageId'])
+        image_id.append(ami['ImageId'])
+    if len(image_id) >= 1:
+        print("deleting -> " + image_id[0])
+        ec2.deregister_image(ImageId=image_id[0])
+    snapshots = ec2_cli.describe_snapshots(OwnerIds=['self'])
+    snap_id = []
+    for snapshot in snapshots['Snapshots']:
+        snap_id.append(snapshot.get('SnapshotId'))
+    inst_id = []
+    f1 = {'Name': 'tag:Name', 'Values':['jenkins-update']}
+    resp = ec2_cli.describe_instances(Filters=[f1])
+    for i in resp['Reservations']:
+        for j in i['Instances']:
+            inst_id.append(j['InstanceId'])
+    response = ec2_cli.create_image(
+        BlockDeviceMappings=[
+            {
+                'DeviceName': '/dev/sdh',
+                'Ebs': {
+                    'DeleteOnTermination': True,
+                    'SnapshotId': snapshots[0],
+                    'VolumeType': 'gp2',
+                },
+            },
+        ],
+        Description='jenkins',
+        DryRun=False,
+        InstanceId=inst_id[0],
+        Name='Jenkins-Replacement',)
+    return None
+```
+
+This code creates AMIs constructed from the most recent snapshot taken of the Jenkins instance and deletes any older ones.
+
+The deletion subroutine runs first, deregistering any images. After this, an image is created; instance id and snapshot id are needed, line 15-16 obtains the snapshots and line 18-22 pulls the id of the instance called jenkins-update (the name of our Jenkins server).
+
+A rate job calls snapshot creation via a lambda function once every six hours. Once this happens, a cloudwatch monitoring rule triggers the image creation function. The images built by this function are made available to the recovery function, which triggers in the event of Jenkins instance health loss.
+
+Should this occur, the AMI will be used in the creation of an instance with identical attributes, enabling its smooth integration into surviving architecture.
 
 ### UI
 
