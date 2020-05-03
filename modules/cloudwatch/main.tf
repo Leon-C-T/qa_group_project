@@ -42,7 +42,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           "period":300,
           "stat":"Average",
           "region":"${var.region}",
-          "title":"EC2 Instance CPU"
+          "title":"Jenkins Disk Usage"
         }
       }
     ]
@@ -65,7 +65,7 @@ resource "aws_cloudwatch_event_target" "snapshot-target" {
 resource "aws_cloudwatch_event_rule" "daily-schedule" {
   name = "cloudwatch-event-snapshot-cleanup"
   description = "This event will once a day at 10pm"
-  schedule_expression = cron(0 22 * * *)
+  schedule_expression = "cron(0 22 * * ? *)"
   is_enabled = true
 }
 

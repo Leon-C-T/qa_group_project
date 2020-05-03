@@ -66,7 +66,7 @@ module "project-cloudwatch-monitoring" {
   snapshot-arn             = module.project-lambda-functions.snapshot-arn
   cleanup-arn              = module.project-lambda-functions.cleanup-arn
   #topic-lambdarecovery-arn = ["${module.project-lambda-functions.recovery-arn}"]
-  topic-lambdarecovery-arn = module.project-sns-topics.recoverytopic-arn
+  topic-lambdarecovery-arn = ["${module.project-sns-topics.recoverytopic-arn}"]
   image-arn                = module.project-lambda-functions.image-arn
   region                   = var.region
 }
