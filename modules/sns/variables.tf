@@ -1,0 +1,1 @@
+variable "recovery-arn" {}
