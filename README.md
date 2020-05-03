@@ -42,7 +42,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     + [Issues Encountered](#issues-encountered)
 5. [Design Considerations](#design-considerations)
     + [Amazon Services](#amazon-services)
-    + [Project Extensions](#project-extensions)
+    + [Individual Showcases](#individual-showcases)
 6. [Testing](#testing)
     + [Local Testing](#local-testing)
 7. [Deployment](#deployment)
@@ -302,11 +302,57 @@ Cloudwatch, through a series of events and rules, implements our Lambda focussed
 
 The containers for the project are running as part of an EKS cluster, which autoscales the instances which make up its nodes. The balancer for the services is set as the NGINX instance, which auto-creates an Elastic Node Balancer as an interface.
 
-![Architectural diagram for our 'serverless' solution](https://i.imgur.com/fJ2wtrO.png)
+![Architectural diagram for our 'serverless' solution](https://i.imgur.com/gqndBRq.png)
 
-### Project Extensions
+For the serverless version of this deployment, there is a noticeable increase in simplicity of design. This follows the hallmarks of provider managed serverless systems, and the move away from discrete resource provisioning. All infrastructure and codeware has been moved fully onto AWS systems, and some aspects of control more heavily managed by AWS itself. Of particular note is the replacement of the Jenkins server with CodePipeline, and the hosting of the containers by an ECS backed system.
 
-DEEP DIVES TO BE DECIDED BY TEAM
+The sole non-serverless item is the RDSConnect database, which is required for correct backend functionality of the deployed app.
+
+### Individual Showcases
+
+In the following section, specific snippets of the project have been highlighted by the group members, and their functionalities given a deep-dive insight. This allows the showcasing of effort that went into this deployment infrastructure, and provides an avenue for all team members to demonstrate their enthusiasm and output.
+
+#### Leon: EKS Node Group
+
+![Node group diagram](https://i.imgur.com/QMB637K.png)
+
+A diagram showing the creation process flow for the EKS functionality within the terraform apply process architecture. The following being the code block actuating the process.
+
+```resource "aws_eks_node_group" "petclinic_eks_nodegrp" {
+  cluster_name    = aws_eks_cluster.petclinic_eks.name
+  node_group_name = "Pet_Clinic_Node_Groups"
+  node_role_arn   = aws_iam_role.pet_role_node.arn
+  subnet_ids      = var.subnets
+  instance_types  = ["${var.instance-type}"]
+
+  scaling_config {
+    min_size     = 1
+    max_size     = 5
+    desired_size = 1
+  }
+  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
+  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
+  depends_on = [
+    aws_iam_role_policy_attachment.pet-AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.pet-AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.pet-AmazonEC2ContainerRegistryReadOnly,
+  ]
+}
+```
+
+As one of the final architecture components to be initialised, the node group is highly dependent on preceding IaC processes. It demonstrates the flexibility and power of the utility, and offers some insights into the nature of resource creation within the AWS CLI framework.
+
+This code within our terraform system creates an EKS node group within the cluster previously defined. This cluster is passed into the block as an argument in line 56, forming a connection. An IAM role which; allows connection to EKS clusters, allows management of network configuration of the nodes, and allows read-only access of the EC2 Container Registry Repository; is attached to the node group via the node_role_arn argument. The listing of the policies as dependencies ensures creation precedence and prevents build errors.
+
+The authorised infrastructure is then placed within the project's VPC.
+
+From a hardware perspective, the var.instance-type variable allows user toggling of hardware output for the node creation. A t2.small was used during testing to keep costs low, however the production system will utilise t3a.small instances in order to guarantee CPU and network performance.
+
+The attached scaling group allows the scaling of the nodes in line with performance, as dictated by a scaling policy attached after the deployment of the resource. Odd numbers are chosen to allow quorum polling to take place in the event of instance health failure.
+
+The node group sits within the EKS cluster and runs the production containers with the use of kubernetes. These containers are passed to the group by Jenkins executed CLI commands during the pipeline runtime. Vital to the deployment, without this provision, no pods could be deployed, and therefore no app could be delivered.
+
+#### 
 
 ### UI
 
