@@ -5,6 +5,6 @@ variable "secgroups" {
   description = "A list of security groups to be associated with EKS Cluster, (from secgroups module)"
 }
 
-variable "region" {
-  
-}
+variable "region" {}
+
+variable "instance-type" {}

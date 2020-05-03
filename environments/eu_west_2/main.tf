@@ -10,9 +10,10 @@ module "jenkins-ec2" {
   source         = "../../modules/ec2"
   jenkins-ami    = "ami-0917237b4e71c5759"
   region         = var.region
+  instance-type  = var.instance-type-input
   jenkins-sec    = ["${module.all_sec_grps.aws_jenkins_sg_id}"]
   jenkins-subnet = module.project-vpc.public_block1_id
-  jenkins-key    = "qapetclinic"
+  jenkins-key    = "qapetclinic" ## Key Created on AWS
 }
 
 module "all_sec_grps" {
@@ -27,6 +28,7 @@ module "project-eks-cluster" {
   subnets   = ["${module.project-vpc.public_block1_id}", "${module.project-vpc.public_block2_id}"]
   secgroups = ["${module.all_sec_grps.aws_wsg_id}"]
   region    = var.region
+  instance-type  = ["${var.instance-type-input}"]
 }
 
 resource "aws_autoscaling_policy" "eks-scale" {

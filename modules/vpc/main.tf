@@ -14,7 +14,7 @@ resource "aws_subnet" "public-block1" {
   vpc_id            = aws_vpc.vpc-module-test.id
   map_public_ip_on_launch = true
   tags = {
-        "kubernetes.io/cluster/PetClinic" = "shared"
+        "kubernetes.io/cluster/PetClinic" = "shared"  #kubernetes.io/cluster/<name_of_cluster>
         "kubernetes.io/role/elb" = "1"
       }     
 }
