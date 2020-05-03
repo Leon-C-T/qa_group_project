@@ -245,9 +245,11 @@ Shown on the diagram is the connection between the backend container and the dat
 
 The pipeline for this project would be the customer facing deployment portal were the project to undergo handover to an operations and maintenance team. To show a typical look at the deployment pipeline, two diagrams are included below.
 
-![Deployment CI/CD Diagram, showing typical process flow.](https://i.imgur.com/kAonKYG.png)
+![Deployment CI/CD Diagram, showing typical process flow.](https://i.imgur.com/IXuXjy9.png)
 
-As demonstrated in the diagram, the inclusion of a non-local database was chosen to be under the GCP SQL service, do demonstrate proficiency with multi-provider solutions. In the ever-changing information services sector, the promotion of a provider agnostic approach is a necessary tool to minimise costs and promote ease of project handoff.
+As demonstrated in the diagram, the inclusion of a non-local database is optional, and would be created in an AWS RDS instance. This requires reworking of the backend container.
+
+A multi-provider approach was considered, with use of a GCP SQL instance, however time constraints on the project did not allow this. It would have required the inclusion of customer and vpn gateways, and the networking of a tunnel between the two providers. A multi-provider solution would be a meaningful extension to the project, showcasing the flexibile business opportunities available in a competitive cloud market.
 
 NGINX, listed as the tool used for 'live' production, is also a container, running as the load balancing service for the EKS cluster. It also serves as part of the https authentication system by way of traffic redirect.
 
@@ -282,7 +284,24 @@ Over the course of our various extensions to the project we changed our structur
 
 Our understanding and depth of utilisation of AWS available services changed over the course of this project, and by the completion of our initial MVP we decided upon committing to a demonstration of two business approaches to deployment functionality. These can be broadly typecast as a 'traditional' in-house managed architectural setup vs. a 'serverless' solution. There are benefits to both but as a generalisation it represents the difference between a control-focussed vs. cost-optimised approach.
 
-![Architectural diagram for our 'traditional' architecture](
+![Architectural diagram for our 'traditional' architecture](https://i.imgur.com/hg9sB4j.png)
+
+This diagram shows the overall architecture deployed by the terraform portion of the project. All instances are networked within a VPC, which itself is comprised of two subnets. Most artifacts are present in both subnets, with the exception of the Jenkins instance, which only exists in one.
+
+Cloudwatch, through a series of events and rules, implements our Lambda focussed snapshot and recovery chain. This is split into four principal components:
+
+1. A rate event triggering every 6 hours.
+    + This triggers a snapshot to be taken of the Jenkins instance.
+2. A cron job ever day at 2200hrs.
+    + This triggers deletion of snapshots over a day old.
+3. The completion of a snapshot creation.
+    + This triggers creation of a new machine image, and deletion of the previous one.
+4. An alarm linked to the health of the Jenkins instance.
+    + This calls an SNS topic.
+        + This triggers the recreation of the Jenkins instance using the backup machine image.
+
+The containers for the project are running as part of an EKS cluster, which autoscales the instances which make up its nodes. The balancer for the services is set as the NGINX instance, which auto-creates an Elastic Node Balancer as an interface.
+
 ![Architectural diagram for our 'serverless' solution](https://i.imgur.com/fJ2wtrO.png)
 
 ### Project Extensions
