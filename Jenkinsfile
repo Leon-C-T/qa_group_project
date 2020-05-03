@@ -16,6 +16,8 @@ pipeline{
                 sh 'chmod 775 ./scripts/*'
                 sh './scripts/installation.sh'
                 sh 'docker-compose up -d'
+                sh 'sleep 10'
+                sh 'docker-compose up -d'
                 sh 'sleep 30'
                 sh 'echo "checking URLs"'
                 sh './scripts/run_before.sh'
