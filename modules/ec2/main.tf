@@ -14,3 +14,4 @@ resource "aws_instance" "jenkins" {
 data "template_file" "jenkins_install" {
 template = file("../../modules/ec2/jenkins.sh")
 }
+
