@@ -62,6 +62,18 @@ resource "aws_cloudwatch_event_target" "snapshot-target" {
   arn  = var.snapshot-arn
 }
 
+resource "aws_cloudwatch_event_rule" "daily-schedule" {
+  name = "cloudwatch-event-snapshot-cleanup"
+  description = "This event will once a day at 10pm"
+  schedule_expression = cron(0 22 * * *)
+  is_enabled = true
+}
+
+resource "aws_cloudwatch_event_target" "cleanup-target" {
+  rule = aws_cloudwatch_event_rule.daily-schedule.name
+  arn  = var.cleanup-arn
+}
+
 resource "aws_cloudwatch_event_target" "image-target" {
   target_id  = "image"
   rule       = aws_cloudwatch_event_rule.image.name
