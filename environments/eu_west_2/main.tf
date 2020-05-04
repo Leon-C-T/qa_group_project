@@ -40,6 +40,11 @@ resource "null_resource" "test" {
 
       #"sudo su jenkins", # Can't change user - Provisioner doesnt match exec
 
+      "until [ id -u jenkins >/dev/null 2>&1 ];"
+      "do"
+      "sleep 5"
+      "done"
+
       "echo 'export url=${module.petclinic-db.rds-endpoint}' >> /var/lib/jenkins/.bashrc",
       "echo 'export username=${var.db-username}' >> /var/lib/jenkins/.bashrc",
       "echo 'export password=${var.db-password}' >> /var/lib/jenkins/.bashrc",
