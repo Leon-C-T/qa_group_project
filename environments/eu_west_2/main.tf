@@ -46,6 +46,7 @@ resource "null_resource" "test" {
       "echo 'export username=${var.db-username}' >> /var/lib/jenkins/.bashrc",
       "echo 'export password=${var.db-password}' >> /var/lib/jenkins/.bashrc",
       "sudo chown jenkins:jenkins /var/lib/jenkins/.bashrc"
+      "sudo chmod 444 /var/lib/jenkins/.bashrc"
     ]
     
   }
