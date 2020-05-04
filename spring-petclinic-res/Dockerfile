@@ -2,7 +2,12 @@ FROM openjdk:8u151-jdk
 
 WORKDIR /app
 
+ENV url=${url}
+ENV password=${password}
+ENV username=${username}
+
 COPY . /app
+
 
 RUN apt-get install git && \
     wget http://www-eu.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz && \

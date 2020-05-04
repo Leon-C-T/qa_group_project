@@ -9,8 +9,6 @@ services:
 
   backend:
     image: thenu97/backend
-    environment:
-      - username=root
     ports:
       - 9966:9966
     container_name: backend
