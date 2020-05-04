@@ -5,8 +5,8 @@ echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
 kubectl version --short --client
 aws eks update-kubeconfig --name PetClinic
 sleep 20
-kubectl create -f /var/lib/jenkins/workspace/latte/kube-serv/service-backend.yaml
+kubectl apply -f /var/lib/jenkins/workspace/latte/kube-serv/service-backend.yaml
 sleep 5
-kubectl create -f /var/lib/jenkins/workspace/latte/kube-serv/service-create.yaml
+kubectl apply -f /var/lib/jenkins/workspace/latte/kube-serv/service-create.yaml
 sleep 20
-kubectl create -f /var/lib/jenkins/workspace/latte/kube-serv/service-nginx.yaml
+kubectl apply -f /var/lib/jenkins/workspace/latte/kube-serv/service-nginx.yaml

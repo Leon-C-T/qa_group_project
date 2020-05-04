@@ -30,6 +30,6 @@ spec:
       hostname: backend
       containers:
       - name: backend
-        image: springcommunity/spring-petclinic-rest
+        image: thenu97/backendpre
         ports:
         - containerPort: 9966

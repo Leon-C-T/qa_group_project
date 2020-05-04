@@ -8,7 +8,7 @@ services:
     container_name: nginx
 
   backend:
-    image: springcommunity/spring-petclinic-rest
+    image: thenu97/backendpre
     ports:
       - 9966:9966
     container_name: backend
