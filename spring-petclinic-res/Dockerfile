@@ -2,6 +2,14 @@ FROM openjdk:8u151-jdk
 
 WORKDIR /app
 
+ARG url
+ARG username
+ARG password
+
+ENV url=$url
+ENV username=$username
+ENV password=$password
+
 COPY . /app
 
 RUN apt-get install git && \
@@ -10,7 +18,5 @@ RUN apt-get install git && \
     mv apache-maven-3.3.9 maven
 
 RUN chmod +x mvnw
-
-RUN . ./cred
 
 CMD ["./mvnw","spring-boot:run"]
