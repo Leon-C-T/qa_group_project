@@ -18,3 +18,12 @@ resource "aws_db_subnet_group" "petclinic-subnet-group" {
     Name = "Petclinic DB subnet group"
   }
 }
+
+#arn required
+#username and password required
+#environment variables sent to jenkins:
+#var/lib/jenkins -> .bashrc file
+#export username
+#export password
+#export URL (use endpoint)
+#need database petclinic inside database
