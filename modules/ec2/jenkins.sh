@@ -15,3 +15,5 @@ sudo apt install unzip -y
 sudo ./aws/install 
 echo 'jenkins ALL=(ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers
 sleep 30
+cd /var/lib/jenkins
+touch .bashrc

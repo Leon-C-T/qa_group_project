@@ -6,6 +6,14 @@ module "project-vpc" {
   region         = var.region
 }
 
+module "petclinic-db" {
+  subnetA  = module.project-vpc.public_block1_id
+  subnetB  = module.project-vpc.public_block2_id
+  username = var.db-username
+  password = var.db-password
+  region   = var.region
+}
+
 module "jenkins-ec2" {
   source         = "../../modules/ec2"
   jenkins-ami    = "ami-0917237b4e71c5759"
@@ -14,6 +22,9 @@ module "jenkins-ec2" {
   jenkins-sec    = ["${module.all_sec_grps.aws_jenkins_sg_id}"]
   jenkins-subnet = module.project-vpc.public_block1_id
   jenkins-key    = "qapetclinic" ## Key Created on AWS
+  db-endpoint    = module.petclinic-db.rds-endpoint
+  db-username    = module.petclinic-db.rds-username
+  db-password    = var.db-password
 }
 
 module "all_sec_grps" {
