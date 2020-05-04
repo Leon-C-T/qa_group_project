@@ -37,10 +37,8 @@ resource "null_resource" "test" {
     }
     
     inline = [
-      #"sleep 120",
-      #"cd /var/lib/jenkins",
+
       #"sudo su jenkins", # Can't change user - Provisioner doesnt match exec
-      #"touch /var/lib/jenkins/.bashrc",
 
       "echo 'export url=${module.petclinic-db.rds-endpoint}' >> /var/lib/jenkins/.bashrc",
       "echo 'export username=${var.db-username}' >> /var/lib/jenkins/.bashrc",
@@ -48,7 +46,6 @@ resource "null_resource" "test" {
       "sudo chown jenkins:jenkins /var/lib/jenkins/.bashrc"
       "sudo chmod 444 /var/lib/jenkins/.bashrc"
     ]
-    
   }
 }
 
@@ -108,4 +105,3 @@ module "project-cloudwatch-monitoring" {
   image-arn                = module.project-lambda-functions.image-arn
   region                   = var.region
 }
-
