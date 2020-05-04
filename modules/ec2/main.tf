@@ -9,16 +9,9 @@ resource "aws_instance" "jenkins" {
   tags = {
     Name = "jenkins-update"
   }
-  provisioner "remote-exec" {
-    inline = [
-      "echo 'export url=${var.db-endpoint}' >> /var/lib/jenkins/.bashrc",
-      "echo 'export username=${var.db-username}' >> /var/lib/jenkins/.bashrc",
-      "echo 'export password=${var.db-password}' >> /var/lib/jenkins/.bashrc"
-    ]
-  }
+  
 }
 
 data "template_file" "jenkins_install" {
-template = file("../../modules/ec2/jenkins.sh")
+  template = file("../../modules/ec2/jenkins.sh")
 }
-

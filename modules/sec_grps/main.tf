@@ -46,10 +46,10 @@ resource "aws_security_group" "jenkins-security" {
   }
 }
 
-resource "aws_db_security_group" "default" {
-  name = "rds_sg"
-
-  ingress {
-    cidr = var.pub-sub-block
-  }
-}
+#resource "aws_db_security_group" "default" {
+#  name = "rds_sg"
+#
+#  ingress {
+#    cidr = var.pub-sub-block
+#  }
+#}
