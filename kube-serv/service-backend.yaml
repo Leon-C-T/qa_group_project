@@ -30,6 +30,6 @@ spec:
       hostname: backend
       containers:
       - name: backend
-        image: thenu97/backendpre
+        image: thenu97/backendup
         ports:
         - containerPort: 9966
