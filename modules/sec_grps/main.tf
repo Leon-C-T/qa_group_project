@@ -45,3 +45,11 @@ resource "aws_security_group" "jenkins-security" {
     cidr_blocks = var.open-internet
   }
 }
+
+#resource "aws_db_security_group" "default" {
+#  name = "rds_sg"
+#
+#  ingress {
+#    cidr = var.pub-sub-block
+#  }
+#}

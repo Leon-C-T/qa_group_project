@@ -13,12 +13,20 @@ resource "aws_subnet" "public-block1" {
   availability_zone = data.aws_availability_zones.available.names[0]
   vpc_id            = aws_vpc.vpc-module-test.id
   map_public_ip_on_launch = true
+  tags = {
+        "kubernetes.io/cluster/PetClinic" = "shared"  #kubernetes.io/cluster/<name_of_cluster>
+        "kubernetes.io/role/elb" = "1"
+      }     
 }
 resource "aws_subnet" "public-block2" {
   cidr_block        = var.pub-sub-block2
   availability_zone = data.aws_availability_zones.available.names[1]
   vpc_id            = aws_vpc.vpc-module-test.id
   map_public_ip_on_launch = true
+  tags = {
+        "kubernetes.io/cluster/PetClinic" = "shared"
+        "kubernetes.io/role/elb" = "1"
+      } 
 }
 resource "aws_internet_gateway" "vpc-igw" {
   vpc_id = aws_vpc.vpc-module-test.id

@@ -1,6 +1,6 @@
 resource "aws_instance" "jenkins" {
   ami                    = var.jenkins-ami
-  instance_type          = "t2.small"
+  instance_type          = var.instance-type
   vpc_security_group_ids = var.jenkins-sec
   subnet_id              = var.jenkins-subnet
   key_name               = var.jenkins-key
@@ -9,8 +9,9 @@ resource "aws_instance" "jenkins" {
   tags = {
     Name = "jenkins-update"
   }
+  
 }
 
 data "template_file" "jenkins_install" {
-template = file("../../modules/ec2/jenkins.sh")
+  template = file("../../modules/ec2/jenkins.sh")
 }

@@ -42,7 +42,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     + [Issues Encountered](#issues-encountered)
 5. [Design Considerations](#design-considerations)
     + [Amazon Services](#amazon-services)
-    + [Project Extensions](#project-extensions)
+    + [Individual Showcases](#individual-showcases)
 6. [Testing](#testing)
     + [Local Testing](#local-testing)
 7. [Deployment](#deployment)
@@ -245,9 +245,11 @@ Shown on the diagram is the connection between the backend container and the dat
 
 The pipeline for this project would be the customer facing deployment portal were the project to undergo handover to an operations and maintenance team. To show a typical look at the deployment pipeline, two diagrams are included below.
 
-![Deployment CI/CD Diagram, showing typical process flow.](https://i.imgur.com/kAonKYG.png)
+![Deployment CI/CD Diagram, showing typical process flow.](https://i.imgur.com/IXuXjy9.png)
 
-As demonstrated in the diagram, the inclusion of a non-local database was chosen to be under the GCP SQL service, do demonstrate proficiency with multi-provider solutions. In the ever-changing information services sector, the promotion of a provider agnostic approach is a necessary tool to minimise costs and promote ease of project handoff.
+As demonstrated in the diagram, the inclusion of a non-local database is optional, and would be created in an AWS RDS instance. This requires reworking of the backend container.
+
+A multi-provider approach was considered, with use of a GCP SQL instance, however time constraints on the project did not allow this. It would have required the inclusion of customer and vpn gateways, and the networking of a tunnel between the two providers. A multi-provider solution would be a meaningful extension to the project, showcasing the flexibile business opportunities available in a competitive cloud market.
 
 NGINX, listed as the tool used for 'live' production, is also a container, running as the load balancing service for the EKS cluster. It also serves as part of the https authentication system by way of traffic redirect.
 
@@ -282,12 +284,150 @@ Over the course of our various extensions to the project we changed our structur
 
 Our understanding and depth of utilisation of AWS available services changed over the course of this project, and by the completion of our initial MVP we decided upon committing to a demonstration of two business approaches to deployment functionality. These can be broadly typecast as a 'traditional' in-house managed architectural setup vs. a 'serverless' solution. There are benefits to both but as a generalisation it represents the difference between a control-focussed vs. cost-optimised approach.
 
-![Architectural diagram for our 'traditional' architecture](
-![Architectural diagram for our 'serverless' solution](https://i.imgur.com/fJ2wtrO.png)
+![Architectural diagram for our 'traditional' architecture](https://i.imgur.com/hg9sB4j.png)
 
-### Project Extensions
+This diagram shows the overall architecture deployed by the terraform portion of the project. All instances are networked within a VPC, which itself is comprised of two subnets. Most artifacts are present in both subnets, with the exception of the Jenkins instance, which only exists in one.
 
-DEEP DIVES TO BE DECIDED BY TEAM
+Cloudwatch, through a series of events and rules, implements our Lambda focussed snapshot and recovery chain. This is split into four principal components:
+
+1. A rate event triggering every 6 hours.
+    + This triggers a snapshot to be taken of the Jenkins instance.
+2. A cron job ever day at 2200hrs.
+    + This triggers deletion of snapshots over a day old.
+3. The completion of a snapshot creation.
+    + This triggers creation of a new machine image, and deletion of the previous one.
+4. An alarm linked to the health of the Jenkins instance.
+    + This calls an SNS topic.
+        + This triggers the recreation of the Jenkins instance using the backup machine image.
+
+The containers for the project are running as part of an EKS cluster, which autoscales the instances which make up its nodes. The balancer for the services is set as the NGINX instance, which auto-creates an Elastic Node Balancer as an interface.
+
+![Architectural diagram for our 'serverless' solution](https://i.imgur.com/gqndBRq.png)
+
+For the serverless version of this deployment, there is a noticeable increase in simplicity of design. This follows the hallmarks of provider managed serverless systems, and the move away from discrete resource provisioning. All infrastructure and codeware has been moved fully onto AWS systems, and some aspects of control more heavily managed by AWS itself. Of particular note is the replacement of the Jenkins server with CodePipeline, and the hosting of the containers by an ECS backed system.
+
+The sole non-serverless item is the RDSConnect database, which is required for correct backend functionality of the deployed app.
+
+### Individual Showcases
+
+In the following section, specific snippets of the project have been highlighted by the group members, and their functionalities given a deep-dive insight. This allows the showcasing of effort that went into this deployment infrastructure, and provides an avenue for all team members to demonstrate their enthusiasm and output.
+
+#### Leon: EKS Node Group
+
+![Node group diagram](https://i.imgur.com/QMB637K.png)
+
+A diagram showing the creation process flow for the EKS functionality within the terraform apply process architecture. The following being the code block actuating the process.
+
+```resource "aws_eks_node_group" "petclinic_eks_nodegrp" {
+  cluster_name    = aws_eks_cluster.petclinic_eks.name
+  node_group_name = "Pet_Clinic_Node_Groups"
+  node_role_arn   = aws_iam_role.pet_role_node.arn
+  subnet_ids      = var.subnets
+  instance_types  = ["${var.instance-type}"]
+
+  scaling_config {
+    min_size     = 1
+    max_size     = 5
+    desired_size = 1
+  }
+  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
+  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
+  depends_on = [
+    aws_iam_role_policy_attachment.pet-AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.pet-AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.pet-AmazonEC2ContainerRegistryReadOnly,
+  ]
+}
+```
+
+As one of the final architecture components to be initialised, the node group is highly dependent on preceding IaC processes. It demonstrates the flexibility and power of the utility, and offers some insights into the nature of resource creation within the AWS CLI framework.
+
+This code within our terraform system creates an EKS node group within the cluster previously defined. This cluster is passed into the block as an argument in line 56, forming a connection. An IAM role which; allows connection to EKS clusters, allows management of network configuration of the nodes, and allows read-only access of the EC2 Container Registry Repository; is attached to the node group via the node_role_arn argument. The listing of the policies as dependencies ensures creation precedence and prevents build errors.
+
+The authorised infrastructure is then placed within the project's VPC.
+
+From a hardware perspective, the var.instance-type variable allows user toggling of hardware output for the node creation. A t2.small was used during testing to keep costs low, however the production system will utilise t3a.small instances in order to guarantee CPU and network performance.
+
+The attached scaling group allows the scaling of the nodes in line with performance, as dictated by a scaling policy attached after the deployment of the resource. Odd numbers are chosen to allow quorum polling to take place in the event of instance health failure.
+
+The node group sits within the EKS cluster and runs the production containers with the use of kubernetes. These containers are passed to the group by Jenkins executed CLI commands during the pipeline runtime. Vital to the deployment, without this provision, no pods could be deployed, and therefore no app could be delivered.
+
+#### Amran: NGINX Kubernetes
+
+![Architecture showcase for the Kubernetes EKS interface](https://i.imgur.com/4ugbdkx.png)
+
+As the code snippet below does not lend itself to a flow-diagram, the explanation above highlights the location of this process within our core architecture. Note the linkage to either Jenkins or CodePipeline.
+
+```apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+spec:
+  selector:
+    app: nginx
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+```
+The above Kubernetes .YML file, alongside this: `aws eks update-kubeconfig --name <clusterName>` code snippet, allows the interface of the containers to the EKS node group, and provides the node balancing for the project. The presence of NGINX in this setting also ensures the provision of a website ARN (AWS provisioned DNS) if the node is connected to a public subnet within the VPN.
+
+The kubeconfig command, entered through the Jenkins terminal during pipeline runs, provides IAM authentication to kubernetes in order to connect to the EKS cluster, as well as permissions to modify it. Without this snippet, the interface between the deployment pipeline and the cluster would fail, and the app would not be deployed.
+
+#### Thenuja: Lambda AMI Manager
+
+![Lambda process flow](https://i.imgur.com/nb3OdCC.png)
+
+The above diagram demonstrates the algorithmic process flow for the image creation lambda function. Related code block included below.
+
+```def lambda_handler(event, context):
+    ec2_res = boto3.resource('ec2')
+    ec2_cli = boto3.client('ec2')
+    amis = ec2_cli.describe_images(Owners=['self'])
+    image_id = []
+    for ami in amis['Images']:
+        ami_id = ami['ImageId']
+        print(ami['ImageId'])
+        image_id.append(ami['ImageId'])
+    if len(image_id) >= 1:
+        print("deleting -> " + image_id[0])
+        ec2.deregister_image(ImageId=image_id[0])
+    snapshots = ec2_cli.describe_snapshots(OwnerIds=['self'])
+    snap_id = []
+    for snapshot in snapshots['Snapshots']:
+        snap_id.append(snapshot.get('SnapshotId'))
+    inst_id = []
+    f1 = {'Name': 'tag:Name', 'Values':['jenkins-update']}
+    resp = ec2_cli.describe_instances(Filters=[f1])
+    for i in resp['Reservations']:
+        for j in i['Instances']:
+            inst_id.append(j['InstanceId'])
+    response = ec2_cli.create_image(
+        BlockDeviceMappings=[
+            {
+                'DeviceName': '/dev/sdh',
+                'Ebs': {
+                    'DeleteOnTermination': True,
+                    'SnapshotId': snapshots[0],
+                    'VolumeType': 'gp2',
+                },
+            },
+        ],
+        Description='jenkins',
+        DryRun=False,
+        InstanceId=inst_id[0],
+        Name='Jenkins-Replacement',)
+    return None
+```
+
+This code creates AMIs constructed from the most recent snapshot taken of the Jenkins instance and deletes any older ones.
+
+The deletion subroutine runs first, deregistering any images. After this, an image is created; instance id and snapshot id are needed, line 15-16 obtains the snapshots and line 18-22 pulls the id of the instance called jenkins-update (the name of our Jenkins server).
+
+A rate job calls snapshot creation via a lambda function once every six hours. Once this happens, a cloudwatch monitoring rule triggers the image creation function. The images built by this function are made available to the recovery function, which triggers in the event of Jenkins instance health loss.
+
+Should this occur, the AMI will be used in the creation of an instance with identical attributes, enabling its smooth integration into surviving architecture.
 
 ### UI
 

@@ -37,3 +37,4 @@ variable "jenkins-ports" {
 
 variable "region" {}
 
+variable "pub-sub-block" {}
