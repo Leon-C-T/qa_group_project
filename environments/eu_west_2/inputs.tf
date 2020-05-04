@@ -16,3 +16,6 @@ variable "db-username" {
 variable "db-password" {
     
 }
+variable "key-path" {
+    
+}
