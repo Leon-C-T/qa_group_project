@@ -1,0 +1,55 @@
+---
+version: 0.2
+phases:
+  install:
+    commands:
+      - curl -sS -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/linux/amd64/aws-iam-authenticator
+      - curl -sS -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/kubectl
+      - curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+      - chmod +x ./kubectl ./aws-iam-authenticator
+      - export PATH=$PWD/:$PATH
+      - apt-get update && apt-get -y install jq python3-pip python3-dev && pip3 install --upgrade awscli
+      - mv /tmp/eksctl /usr/local/bin
+  pre_build:
+      commands:
+        - TAG="$REPOSITORY_NAME.$REPOSITORY_BRANCH.$ENVIRONMENT_NAME.$(date +%Y-%m-%d.%H.%M.%S).$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
+        
+        - export KUBECONFIG=$HOME/.kube/config
+  build:
+    commands:
+      
+
+  post_build:
+    commands:
+      
+      
+      - export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - export AWS_DEFAULT_REGION=eu-west-1
+      - aws eks update-kubeconfig --name test-cluster
+      - eksctl utils associate-iam-oidc-provider --region eu-west-1 --cluster test-cluster --approve
+      - sleep 10
+      - kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/rbac-role.yaml      
+      - eksctl create iamserviceaccount --region eu-west-1 --name alb-ingress-controller --namespace kube-system --cluster test-cluster --attach-policy-arn arn:${ALBIngressControllerIAMPolicy} --override-existing-serviceaccounts --approve
+      - sleep 10
+      - sed -i  "36i \            - --aws-vpc-id=${vpc}" alb-ingress-controller.yaml
+      - cat alb-ingress-controller.yaml
+      - kubectl apply -f alb-ingress-controller.yaml
+      - sleep 20
+
+      - kubectl get nodes
+      - kubectl apply -f kube-serv/service-create.yaml
+      - echo "url=${url}" > env1.txt
+      - sleep 2
+      - echo "password=${password}" >> env1.txt
+      - sleep 2
+      - echo "username=root" >> env1.txt
+      - sleep 2
+      - cat env1.txt
+
+      - kubectl delete secret my-credentials || echo "already deleted or not existing"
+      - kubectl create secret generic my-credentials --from-env-file=env1.txt
+      - sleep 5
+      - kubectl apply -f kube-serv/service-backend.yaml
+      - sleep 10
+      - kubectl apply -f kube-serv/ingress-service-am.yaml
