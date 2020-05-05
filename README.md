@@ -157,6 +157,12 @@ Tasks seen on the board were colour coded in terms of urgency. The inital toolse
 + Conflicts were discovered with the recently instituted AWS Data Lifecycle manager, leading to its inclusion as a project extension, and the necessity for a snapshot deletion lambda function. Due to the difficulty in deleting snapshots without first removing associated images, the image creation function was ammended to only permit a single image per target.
 + SNS topics were investigated to streamline function calls and to enable later automation of project monitoring reporting.
 + Amazon Fargate was intialised in the first step toward a fully serverless alternate solution to the project architecture.
++ Implemented an external RDS instance to act as a database for the deployment.
++ Credential issue with containerisation.
++ Automated Jenkins configuration and environmental variables.
++ Implemented in-pipeline docker build/push.
++ Amazon Fargate working through GUI.
++ CodePipeline working through GUI.
 
 ### End Point
 
@@ -175,6 +181,7 @@ EXPLANATION OF ENDPOINT
 
 + Little usage was found for configuration management in a project of this scale.
 + CloudTrail user tracking was not implemented for the project.
++ After deliberation, X-RAY was dropped from the project due to difficulties with the daemon.
 + The testing functionality explained in the submodule README could not be implemented, after outside assistance, no solution could be found.
 
 ## Risk Assessment
@@ -430,6 +437,45 @@ A rate job calls snapshot creation via a lambda function once every six hours. O
 Should this occur, the AMI will be used in the creation of an instance with identical attributes, enabling its smooth integration into surviving architecture.
 
 [This](https://www.datadoghq.com/state-of-serverless/) article offers a look at the state of serverless solutions within the industry, and a discussion on issues related to this aspect of our project.
+
+#### THC: Shell Script Automation
+
+[Flow diagram to demonstrate interaction of shell automation](AWAITINGLINK
+
+```echo 'jenkins ALL=(ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers
+i=1
+until [ $i -eq 0 ];
+do
+    id -u jenkins >/dev/null 2>&1
+    i=$(printf '%d\n' $?)
+    sleep 5
+done
+touch /var/lib/jenkins/.bashrc
+chmod 776 /var/lib/jenkins/.bashrc
+```
+
+The above code configures Jenkins pre-setup. Run by the root user on instance creation, this code adds Jenkins user to the sudoers group, waits until Jenkins boot sequence creates the Jenkins user, then adds a .bashrc file to its root filepath. This code is important in preventing hidden timeout and errors during the Jenkins server setup phase.
+
+This code is run as part of a `user_data` block in terraform. This functionality allows predefined startup events to take place at the point of instance creation. As commands are executed by root, this block is ideal for running update, upgrade, and installation functionality. As seen from the `chmod` command, it is necessary to manage file ownership and permissions, to prevent errors during later usage.
+
+Once this code has run, a secondary `remote-exec` null-resource runs. This resource is dependent on the creation of the RDS instance, and so waits during creation for variable availability before executing. After SSH-ing into the Jenkins instance, the following code block is run.
+
+```while [ ! -f /var/lib/jenkins/.bashrc ]
+do
+    sleep 5
+done
+echo 'export url=${module.petclinic-db.rds-endpoint}' >> /var/lib/jenkins/.bashrc
+echo 'export username=${var.db-username}' >> /var/lib/jenkins/.bashrc
+echo 'export password=${var.db-password}' >> /var/lib/jenkins/.bashrc
+sudo chown jenkins:jenkins /var/lib/jenkins/.bashrc
+sudo chmod 444 /var/lib/jenkins/.bashrc
+```
+
+This code waits until the root user has finished creation of a .bashrc file at the jenkins user root. It then encodes our required environmental variables, drawing them from the terraform information provided; before changing file ownership to jenkins user, and modifying file permissions to read-only.
+
+This dual process, executed at different points of the IaC runtime, exemplifies the flexibility of the toolset, and the importance of a multi-language approach on behalf of industry professionals. The usage of shellscript automation here ensures that the surrounding toolsets do not encounter errors during runtime, and allows near complete automation of the project functionality. Without this step multiple repository files would require editing by end-users.
+
+[This article](https://link.springer.com/article/10.1007/s00450-019-00412-x) is a meta-analysis of DevOps automation practices that may be of interest to those considering a holistic approach to DevOps practices.
 
 ### UI
 
