@@ -4,5 +4,5 @@ provider "aws" {
   #  session_name = "terraform-app-${terraform.workspace}"
   #}
   shared_credentials_file = "~/.aws/credentials/"
-  region = var.region
+  region                  = var.region
 }

@@ -23,7 +23,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "codebuild-policy" {
-  role = "${aws_iam_role.petclinic-codebuild.name}"
+  role = aws_iam_role.codebuild-role.name
 
   policy = <<POLICY
 {
@@ -86,9 +86,28 @@ resource "aws_iam_role_policy" "codebuild-policy" {
 POLICY
 }
 
-resource "aws_iam_role_policy" "alb-policy" {
+resource "aws_iam_role" "alb-role" {
+  name = "alb-codebuild"
 
-  policy = <<POLICY
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "codebuild.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "alb-policy" {
+    role = aws_iam_role.alb-role.name
+    policy = <<POLICY
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -214,7 +233,7 @@ resource "aws_codebuild_project" "petclinic-build" {
   name          = "petclinic-project"
   description   = "petclinic_group_project_codebuild"
   build_timeout = "5"
-  service_role  = "${aws_iam_role.codebuild-role.arn}"
+  service_role  = aws_iam_role.codebuild-role.arn
 
   artifacts {
     type = "NO_ARTIFACTS"
@@ -222,7 +241,7 @@ resource "aws_codebuild_project" "petclinic-build" {
 
   cache {
     type     = "S3"
-    location = "${aws_s3_bucket.petclinic-latte-build-bucket.bucket}"
+    location = aws_s3_bucket.petclinic-latte-build-bucket.bucket
   }
 
   environment {
@@ -233,39 +252,39 @@ resource "aws_codebuild_project" "petclinic-build" {
 
     environment_variable {
       name  = "rds-password"
-      value = "${var.rds-password}"
+      value = var.rds-password
     }
 
     environment_variable {
       name  = "rds-url-endpoint"
-      value = "${var.rds-endpoint}"
+      value = var.rds-endpoint
     }
 
     environment_variable {
       name  = "vpc-id"
-      value = "${var.vpc-id}"
+      value = var.vpc-id
     }
 
     environment_variable {
       name  = "aws-access-key"
-      value = "${var.access-key-id}"
+      value = var.access-key-id
     }
 
     environment_variable {
       name  = "secret-access-key"
-      value = "${var.secret-key}"
+      value =  var.secret-key
     }
 
     environment_variable {
       name  = "alb-policy-arn"
-      value = aws_iam_role_policy.alb-policy.arn
+      value = aws_iam_role.alb-role.arn
     }
   }
 
   logs_config {
     cloudwatch_logs {
-      group_name  = "log-group"
-      stream_name = "log-stream"
+      group_name  = "codebuild-log-group"
+      stream_name = "codebuild-stream"
     }
 
     s3_logs {
@@ -287,8 +306,8 @@ resource "aws_codebuild_project" "petclinic-build" {
   source_version = "serverless"
 
   vpc_config {
-    vpc_id = "${var.vpc-id}"
-
+    vpc_id = var.vpc-id
+    security_group_ids = var.sec-grps
     subnets = [
       "${var.subnetA-id}",
       "${var.subnetB-id}",
@@ -297,5 +316,21 @@ resource "aws_codebuild_project" "petclinic-build" {
 
   tags = {
     Environment = "test-deploy-fargate"
+  }
+}
+
+resource "aws_codebuild_webhook" "petclinic-webhook" {
+  project_name = aws_codebuild_project.petclinic-build.name
+
+  filter_group {
+    filter {
+      type    = "EVENT"
+      pattern = "PUSH"
+    }
+
+    filter {
+      type    = "HEAD_REF"
+      pattern = "master"
+    }
   }
 }

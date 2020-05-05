@@ -28,13 +28,22 @@ resource "aws_subnet" "public-block2" {
         "kubernetes.io/role/elb" = "1"
       } 
 }
+resource "aws_subnet" "private-block1" {
+  cidr_block        = var.priv-sub-block1
+  availability_zone = data.aws_availability_zones.available.names[0]
+  vpc_id            = aws_vpc.vpc-module-test.id
+  tags = {
+        "kubernetes.io/cluster/PetClinic" = "shared"  #kubernetes.io/cluster/<name_of_cluster>
+        "kubernetes.io/role/internal-elb" = "1"
+      } 
+}
 resource "aws_internet_gateway" "vpc-igw" {
   vpc_id = aws_vpc.vpc-module-test.id
   tags = {
     Name = "VPC Internet Gateway"
   }
 }
-resource "aws_route_table" "vpc-rt" {
+resource "aws_route_table" "vpc-rt-public" {
   vpc_id = aws_vpc.vpc-module-test.id
   route {
     cidr_block = "0.0.0.0/0"
@@ -44,11 +53,36 @@ resource "aws_route_table" "vpc-rt" {
     Name = "Route Table for VPC"
   }
 }
+resource "aws_route_table" "vpc-rt-private" {
+  vpc_id = aws_vpc.vpc-module-test.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat-public.id
+  }
+  tags = {
+    Name = "Route Table for VPC"
+  }
+}
 resource "aws_route_table_association" "pub-sub-rta" {
   subnet_id      = aws_subnet.public-block1.id
-  route_table_id = aws_route_table.vpc-rt.id
+  route_table_id = aws_route_table.vpc-rt-public.id
 }
 resource "aws_route_table_association" "pub-sub-rtb" {
   subnet_id      = aws_subnet.public-block2.id
-  route_table_id = aws_route_table.vpc-rt.id
+  route_table_id = aws_route_table.vpc-rt-public.id
+}
+resource "aws_route_table_association" "priv-sub-rta" {
+  subnet_id      = aws_subnet.private-block1.id
+  route_table_id = aws_route_table.vpc-rt-private.id
+}
+
+resource "aws_nat_gateway" "nat-public" {
+  allocation_id = aws_eip.fargate-eip.id
+  subnet_id = aws_subnet.public-block1.id
+
+  depends_on = [aws_internet_gateway.vpc-igw]
+}
+
+resource "aws_eip" "fargate-eip" {
+  vpc = true
 }
