@@ -6,7 +6,7 @@ resource "aws_security_group" "wsg" {
   ingress {
     from_port       = 0
     protocol        = -1
-    security_groups = [aws_security_group.*.id]
+    #security_groups = [aws_security_group.fargate-sg.id]
     to_port         = 0
     cidr_blocks     = var.open-internet
   }
@@ -30,7 +30,7 @@ resource "aws_security_group" "fargate-sg" {
   ingress {
     from_port       = 0
     protocol        = -1
-    security_groups = [aws_security_group.*.id]
+    security_groups = [aws_security_group.wsg.id]
     to_port         = 0
     cidr_blocks     = var.open-internet
   }

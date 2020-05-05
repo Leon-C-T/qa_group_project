@@ -14,6 +14,10 @@ output "private_block1_id" {
   value = aws_subnet.private-block1.id
 }
 
+output "private_block2_id" {
+  value = aws_subnet.private-block2.id
+}
+
 output "public_block1_arn" {
   value = aws_subnet.public-block1.arn
 }
