@@ -537,7 +537,37 @@ To pair with this imagined sprint, a potential risk assessment has been provided
 
 ## Installation and Setup Guide
 
-1. EXHAUSTIVE LIST OF INSTALLATION STEPS
+1. Clone down this repository.
+2. Create or login to your AWS account.
+3. Generate an AWS .pem key, downloading your copy and noting the name. Note: YOUR KEY MUST BE CREATED IN THE REGION YOU INTEND TO DEPLOY TO.
+4. Navigate to the eu-west-2 folder of this directory, and place your copy of the AWS key here.
+5. Install terraform following [this guide](https://learn.hashicorp.com/terraform/getting-started/install.html).
+6. In the folder, run the command `terraform init` followed by `terraform plan`.
+7. Provide the variables as requested by terraform, and check that no errors are thrown.
+![This is what no errors looks like](LINKPENDING
+8. Still in the folder, run the command `terraform apply`.
+![This is what a successful application looks like](
+9. Copy the endpoint for later application.
+10. Navigate to your AWS web console and follow the instructions to ssh to your newly created EC2 instance. This can be found by searching EC2 in the upper right search bar.
+11. On the EC2 server, run the command `sudo su jenkins`.
+    1. Run the command `aws configure` inserting the credentials you used for terraform.
+    2. cd to the root directory of jenkins and add the following lines to the .bashrc file; remembering to enter your docker user data if you have some, and creating some if you don't:
+        + export DOCKER_USER= `YOUR-USERNAME`
+        + export DOCKER_PASS= `YOUR-PASSWORD`
+12. Get the IP address of the server you're on.
+13. Open a web browser and paste it in the address bar using the format `ipaddress:8080`.
+    1. `cat` initial password as directed on the Jenkins welcome page
+    2. Install plugins and sign up to Jenkins as directed.
+14. Follow the link [here](https://github.com/THC-QA/qa_group_project/tree/dev/spring-petclinic-res/src/main/resources/db/mysql) and ensure you copy and paste the .sql files to the created database. Use the endpoint provided to ssh to the resource.
+15. Using the guide found [here](https://embeddedartistry.com/blog/2017/12/21/jenkins-kick-off-a-ci-build-with-github-push-notifications/) configure your copy of the repository to allow webhooks.
+16. Completing the procedure, use the guide found [here](https://dzone.com/articles/adding-a-github-webhook-in-your-jenkins-pipeline) to add the webhook to your Jenkins server.
+15. Run the Jenkins pipeline.
+    1. The first run of the pipeline is designed to fail as Jenkins user will be added to the Docker group. This requries a system reboot.
+16. Reboot the jenkins server using the AWS web interface.
+    1. Wait until the system has rebooted, then wait an additional minute for Jenkins to reactivate.
+    2. Login to your jenkins again, following the earlier steps.
+    3. Press build.
+17. The application will now be running on the EKS cluster defined in the terraform plan.
 
 #### Authors
 
@@ -545,4 +575,4 @@ THC, thenu97, Amran-Lab, Leon-C-T - QA Academy Trainees.
 
 #### Acknowledgements
 
-A massive thank you to Syed, for fielding our endless questions, and WRITE SOMETHING ELSE
+A massive thank you to Syed, for fielding our endless questions, and many thanks to QA-Limited for the opportunity, training, and our operational budget.
