@@ -80,9 +80,9 @@ Our proposal focused on the creation of an automated workflow focusing on the fo
 + Monitoring of the project using AWS tools such as CloudWatch.
 + A basic SRE focussed design incorporating serverless backup and recovery functions.
 
-![An initial look at a simplified project architecture](https://i.imgur.com/vzR9JnO.png)
+![An initial look at a simplified project architecture](https://i.imgur.com/L0dq7Ek.png)
 
-This shows intial architecture plan was sketched during the first team standup. Note the colour assignment showing our extensions of the core brief.
+This shows intial architecture plan was [sketched](https://i.imgur.com/vzR9JnO.png) during the first team standup. Note the colour assignment showing our extensions of the core brief.
 
 Green demonstrates a *true* MVP for the project. A single Jenkins server deploying to a manager and worker node. The architecture would be deployed manually using a terraform HCL application, the pipeline would deploy a containerised application using Kubernetes. Nodes would be configured using ansible, and balanced/scaled using basic EC2 functionality.
 
@@ -447,11 +447,18 @@ ENABLE SOME FEATURE
 
 ### Local Testing
 
-DESCRIPTION OF TESTING AND RELEVANT CODE BLOCK
+The local testing runs eight url tests on the deployed container, utilising pytest.
 
 ### Final Report
 
-ANALYSIS OF HOW TESTING COULD BE ACHIEVED OR HANDED OVER
+![Coverage report for URL testing](https://i.imgur.com/rCsUH2P.jpg)
+
+- The above coverage report details the completion of the URL testing conducted during standard pipeline runs.
+- The presence of the application at the presumed url endpoint results in a 100% coverage.
+- The url is automatically discovered via the command `curl https://ipinfo.io/ip`
+- The unit testing specified on the spring-clinic README was unable to be implemented due to the angular version 8.0.3. The command `ng tes` results in an `version out of date` error message.
+- Updated versions conflict with the core programming and result in similar errors.
+- The current state of testing merely confirms the presence of a deployed container, there is scope for additional database, unit, and frontend testing.
 
 ## Deployment
 
