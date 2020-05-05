@@ -3,15 +3,12 @@ resource "aws_security_group" "wsg" {
   description = "For Pet QA Group Project"
   vpc_id      = var.vpc_id
 
-  dynamic "ingress" {
-    iterator = port
-    for_each = var.ingress-ports
-    content {
-      from_port   = port.value
-      protocol    = "tcp"
-      to_port     = port.value
-      cidr_blocks = var.open-internet
-    }
+  ingress {
+    from_port       = 0
+    protocol        = -1
+    security_groups = [aws_security_group.*.id]
+    to_port         = 0
+    cidr_blocks     = var.open-internet
   }
 
   egress {
@@ -24,18 +21,18 @@ resource "aws_security_group" "wsg" {
 }
 
 resource "aws_security_group" "fargate-sg" {
-  name = "fargate-security-group"
-  vpc_id      = var.vpc_id
+  name  = "fargate-security-group"
+  vpc_id = var.vpc_id
+  tags   = {
+    "kubernetes.io/cluster/PetClinic" = "owned"
+  }
   
-  dynamic "ingress" {
-    iterator = port
-    for_each = var.fargate-ports
-    content {
-      from_port   = port.value
-      protocol    = "tcp"
-      to_port     = port.value
-      cidr_blocks = var.open-internet
-    }
+  ingress {
+    from_port       = 0
+    protocol        = -1
+    security_groups = [aws_security_group.*.id]
+    to_port         = 0
+    cidr_blocks     = var.open-internet
   }
   
   egress {

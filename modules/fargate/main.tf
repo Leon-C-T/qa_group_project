@@ -9,7 +9,9 @@ resource "aws_eks_fargate_profile" "fargate-pets" {
   }
   selector {
     namespace = "kube-system"
-    labels  
+    labels  = {
+        "k8s-app" = "kube-dns"
+    }
   }
 }
 
@@ -30,5 +32,10 @@ resource "aws_iam_role" "fargate-execution" {
 
 resource "aws_iam_role_policy_attachment" "fargate-AmazonEKSFargatePodExecutionRolePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
+  role       = aws_iam_role.fargate-execution.name
+}
+
+resource "aws_iam_role_policy_attachment" "fargate-AmazonEKSWorkerNodePolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.fargate-execution.name
 }
