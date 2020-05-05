@@ -429,6 +429,8 @@ A rate job calls snapshot creation via a lambda function once every six hours. O
 
 Should this occur, the AMI will be used in the creation of an instance with identical attributes, enabling its smooth integration into surviving architecture.
 
+[This](https://www.datadoghq.com/state-of-serverless/) article offers a look at the state of serverless solutions within the industry, and a discussion on issues related to this aspect of our project.
+
 ### UI
 
 Potential logo
