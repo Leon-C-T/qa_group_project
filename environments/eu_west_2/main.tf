@@ -22,33 +22,28 @@ module "jenkins-ec2" {
   instance-type  = var.instance-type-input
   jenkins-sec    = ["${module.all_sec_grps.aws_jenkins_sg_id}"]
   jenkins-subnet = module.project-vpc.public_block1_id
-  jenkins-key    = "qapetclinic" ## Key Created on AWS
+  jenkins-key    = "your_key_here" ## Enter The Name of Your Key Created on AWS Here within the quotes.
 }
 
-# --- REMOTE EXEC UNDIAGNOSED TIMEOUT --- edit: Diagnosed & Working
-
-resource "null_resource" "test" {
+resource "null_resource" "test" { # edit: Diagnosed & Working (prev err: remote exec undiagnosed timeout)
   provisioner "remote-exec" {
     connection {
       type = "ssh"
       host = module.jenkins-ec2.public_ip
       private_key = file("${var.key-path}")
-      user = "ubuntu"
+      user = "ubuntu"   #Default user for AMI image used when creating Jenkins EC2 instance (may have to change if different AMI used)
     }
     
     inline = [
-
-      #"sudo su jenkins", # Can't change user - Provisioner doesnt match exec
-
-      "until [ id -u jenkins >/dev/null 2>&1 ];"
-      "do"
-      "sleep 5"
-      "done"
-
+      #"sudo su jenkins", # Can't change user - Provisioner doesnt match exec (Terraform Glitch)
+      "while [ ! -f /var/lib/jenkins/.bashrc ]",
+      "do",
+      "sleep 5", 
+      "done",
       "echo 'export url=${module.petclinic-db.rds-endpoint}' >> /var/lib/jenkins/.bashrc",
       "echo 'export username=${var.db-username}' >> /var/lib/jenkins/.bashrc",
       "echo 'export password=${var.db-password}' >> /var/lib/jenkins/.bashrc",
-      "sudo chown jenkins:jenkins /var/lib/jenkins/.bashrc"
+      "sudo chown jenkins:jenkins /var/lib/jenkins/.bashrc",
       "sudo chmod 444 /var/lib/jenkins/.bashrc"
     ]
   }

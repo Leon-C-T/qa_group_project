@@ -7,4 +7,6 @@ variable "pub-sub-block1" {
 variable "pub-sub-block2" {
     description = "CIDR block for public subnet"
 }
-variable "region" {}
+variable "region" {
+    description = "The Region to deploy the VPC module in (Uses value from inputs.tf)"
+}

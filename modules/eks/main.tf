@@ -1,7 +1,7 @@
 ############################################################## EKS CLUSTER + EKS CLUSTER IAM ROLE ##############################################################
 
 resource "aws_eks_cluster" "petclinic_eks" {
-  name     = "PetClinic"
+  name     = "PetClinic"    # Name of EKS Cluster on AWS
   role_arn = aws_iam_role.petrole.arn
 
   vpc_config {

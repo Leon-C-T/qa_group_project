@@ -14,8 +14,11 @@ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip
 apt install unzip -y
 ./aws/install 
 echo 'jenkins ALL=(ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers
-until [ id -u jenkins >/dev/null 2>&1 ];
+i=1
+until [ $i -eq 0 ];
 do
+    id -u jenkins >/dev/null 2>&1
+    i=$(printf '%d\n' $?)
     sleep 5
 done
 touch /var/lib/jenkins/.bashrc
