@@ -238,6 +238,7 @@ There are three potential takeaways from the discrepancies between the first and
 3. Some things, you just can't forsee.
 
 > _"“We demand rigidly defined areas of doubt and uncertainty!”_
+
 ―- Douglas Adams
 
 To further illustrate the renewed risk assessment, a modified risk matrix is displayed below.
@@ -255,6 +256,7 @@ This leaves us with 2 core takeaways:
 2. The importance of familiarity with providers in the current cloud marketplace.
 
 > _“Perhaps home is not a place but simply an irrevocable condition.”_
+
 ―- James Baldwin
 
 ### Budgeting
