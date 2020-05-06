@@ -532,11 +532,20 @@ A sort of project mascot, riffing on the theme of 'delivery pipeline'.
 
 #### Potential Expansions
 
-ANYTHING WE DON'T MANAGE TO GET DONE
+In the diagram below is an imagined architecture for an expansion of the serverless branch of our project.
 
-![Expanded architecture diagram.](EXPANDED OPERATIONAL FUNCTIONALITY
+![Expanded architecture diagram.](https://i.imgur.com/gVloD48.png)
 
-ENABLE SOME FEATURE
++ Orange areas denote features that were unable to be included due to time constraints:
+    - CodeCommit (pipeline link)
+    - Amazon ECS Fargate connection
+    - X Ray traffic tracing
++ Green areas denote features that could be included in a future expansion:
+    - Athena for monitoring
+    - Multi-Provider data storage
+    - Monitoring with Kinesis
+    - App extension interfacing with API Gateway
++ Knowledge in the languages in the top left would be required for this expansion.
 
 ## Testing
 
@@ -1004,9 +1013,29 @@ Care must be taken whilst implementing git commands. Every time.
 
 ## Improvements for Future Versions
 
-WHAT WE WANT TO ACHIEVE THAT WE DIDN'T MANAGE TO: A LIST
+![SNS test](https://i.imgur.com/Jnxxmtu.png)
 
-KANBAN FOR IMAGINED FUTURE SPRINT
+As can be seen from the above image, issues were encountered.
+
+Due to time constraints on a single week project, some aspects of the serverless solution were beyond our ability to complete. They are listed here for inclusion in a future project expansion:
+
++ Expanded testing, particularly stress, unit, and database.
++ Complete automation of the serverless branch. Currently Fargate is created via CLI.
++ Correct networking of Fargate. Every attempt other than CLI commands appears to result in incomplete networking.
++ Use of multiple cloud providers for a provider agnostic solution.
++ Implementing SNS for the autoscaling group as well as the CodeBuild results.
++ Enhanced monitoring of the project, this can come in several stages:
+    - CloudTrail
+    - X Ray
+    - Kinesis
+    - Athena
++ Enhanced security features for the project, this could include:
+    - Cognito
+    - Inspector
+    - Guard Duty
+    - Secrets Manager
+
+To accompany some of these expansions, an imagined future Sprint has been outlined on the Kanban below. This sprint would take approximately a month, and could be subdivided into feature focuses.
 
 ![An imagined kanban board for the database sprint of an updated project](https://i.imgur.com/I59IeCB.png)
 
@@ -1014,7 +1043,13 @@ To pair with this imagined sprint, a potential risk assessment has been provided
 
 |Risk Code|Potential Risk|Potential Impact|Hypothetical Preventative Measure|
 |---|---|---|---|
-|FUTURE RISKS FOR FUTURE PEOPLE
+|1.0.1|Budget constraints.|5|Acquire funding.|
+|1.1.1|Java expertise.|4|Acquire training.|
+|1.2.1|AWS familiarity.|3|Spend time.|
+|1.2.2|AWS networking.|3|Diversify team skills portfolio.|
+1.2.3|Multi Provider conflicts.|4|Research.|
+
+Currently, enthusiastically, most of our imagined risks require time and learning to solve.
 
 ## Installation and Setup Guide
 
