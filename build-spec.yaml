@@ -54,3 +54,5 @@ phases:
       - kubectl apply -f kube-serv/service-backend.yaml
       - sleep 20
       - kubectl apply -f kube-serv/ingress-service-am.yaml
+      - kubectl get ingress
+      
