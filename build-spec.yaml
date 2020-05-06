@@ -52,5 +52,5 @@ phases:
       - kubectl create secret generic my-credentials --from-env-file=env1.txt
       - sleep 5
       - kubectl apply -f kube-serv/service-backend.yaml
-      - sleep 10
+      - sleep 20
       - kubectl apply -f kube-serv/ingress-service-am.yaml
