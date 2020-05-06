@@ -1,5 +1,5 @@
 #!/bin/bash
-gpasswd -a jenkins docker
+sudo gpasswd -a jenkins docker
 sudo apt install mysql-client-core-8.0
 source ~/.bashrc
 mysql -h $url -u $username -p$password "petclinic" < /var/lib/jenkins/workspace/latte/spring-petclinic-res/src/main/resources/db/mysql/initDB.sql
