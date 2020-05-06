@@ -26,12 +26,13 @@ phases:
       - export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - export AWS_DEFAULT_REGION=eu-west-1
-      - aws eks update-kubeconfig --name test-cluster
-      - eksctl utils associate-iam-oidc-provider --region eu-west-1 --cluster test-cluster --approve
+      - aws eks update-kubeconfig --name ${cluster_name}
+      - eksctl utils associate-iam-oidc-provider --region eu-west-1 --cluster ${cluster_name} --approve
       - sleep 10
       - kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/rbac-role.yaml      
-      - eksctl create iamserviceaccount --region eu-west-1 --name alb-ingress-controller --namespace kube-system --cluster test-cluster --attach-policy-arn arn:${ALBIngressControllerIAMPolicy} --override-existing-serviceaccounts --approve
+      - eksctl create iamserviceaccount --region eu-west-1 --name alb-ingress-controller --namespace kube-system --cluster ${cluster_name} --attach-policy-arn arn:${ALBIngressControllerIAMPolicy} --override-existing-serviceaccounts --approve
       - sleep 10
+      - sed -i  "34i \            - --cluster-name=${cluster_name}" alb-ingress-controller.yaml
       - sed -i  "36i \            - --aws-vpc-id=${vpc}" alb-ingress-controller.yaml
       - cat alb-ingress-controller.yaml
       - kubectl apply -f alb-ingress-controller.yaml
@@ -43,7 +44,7 @@ phases:
       - sleep 2
       - echo "password=${password}" >> env1.txt
       - sleep 2
-      - echo "username=root" >> env1.txt
+      - echo "username=${username}" >> env1.txt
       - sleep 2
       - cat env1.txt
 

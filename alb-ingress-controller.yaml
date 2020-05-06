@@ -31,7 +31,7 @@ spec:
             # annotation kubernetes.io/ingress.class: "alb" are respected by the controller. You may
             # choose any class you'd like for this controller to respect.
             - --ingress-class=alb
-            - --cluster-name=test-cluster
+            
             - --aws-region=eu-west-1
 
             # REQUIRED
