@@ -66,7 +66,8 @@ resource "aws_route_table" "vpc-rt-private" {
   vpc_id = aws_vpc.vpc-module-test.id
   route {
     cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat-public.id
+    gateway_id = aws_internet_gateway.vpc-igw.id
+    #nat_gateway_id = aws_nat_gateway.nat-public.id
   }
   tags = {
     Name = "Route Table for VPC"
@@ -89,33 +90,33 @@ resource "aws_route_table_association" "priv-sub-rtb" {
   route_table_id = aws_route_table.vpc-rt-private.id
 }
 
-resource "aws_nat_gateway" "nat-public" {
-  allocation_id = aws_eip.fargate-eip1.id
-  subnet_id = aws_subnet.public-block1.id
-
-  depends_on = [aws_internet_gateway.vpc-igw]
-}
-
-resource "aws_nat_gateway" "nat-public2" {
-  allocation_id = aws_eip.fargate-eip2.id
-  subnet_id = aws_subnet.public-block2.id
-
-  depends_on = [aws_internet_gateway.vpc-igw]
-}
-
-resource "aws_eip" "fargate-eip1" {
-  vpc = true
-}
-resource "aws_eip" "fargate-eip2" {
-  vpc = true
-}
-
-
-resource "aws_network_interface" "privateENI1" {
-  subnet_id       = aws_subnet.private-block1.id
-  security_groups = var.sec-grps
-}
-resource "aws_network_interface" "privateENI2" {
-  subnet_id       = aws_subnet.private-block2.id
-  security_groups = var.sec-grps
-}
+#resource "aws_nat_gateway" "nat-public" {
+#  allocation_id = aws_eip.fargate-eip1.id
+#  subnet_id = aws_subnet.public-block1.id
+#
+#  depends_on = [aws_internet_gateway.vpc-igw]
+#}
+#
+#resource "aws_nat_gateway" "nat-public2" {
+#  allocation_id = aws_eip.fargate-eip2.id
+#  subnet_id = aws_subnet.public-block2.id
+#
+#  depends_on = [aws_internet_gateway.vpc-igw]
+#}
+#
+#resource "aws_eip" "fargate-eip1" {
+#  vpc = true
+#}
+#resource "aws_eip" "fargate-eip2" {
+#  vpc = true
+#}
+#
+#
+#resource "aws_network_interface" "privateENI1" {
+#  subnet_id       = aws_subnet.private-block1.id
+#  security_groups = var.sec-grps
+#}
+#resource "aws_network_interface" "privateENI2" {
+#  subnet_id       = aws_subnet.private-block2.id
+#  security_groups = var.sec-grps
+#}

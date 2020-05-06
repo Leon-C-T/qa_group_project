@@ -4,7 +4,9 @@ module "project-vpc" {
   pub-sub-block1  = "36.216.1.0/24"
   pub-sub-block2  = "36.216.2.0/24"
   priv-sub-block1 = "36.216.10.0/24"
+  priv-sub-block2 = "36.216.11.0/24"
   region          = var.region
+  sec-grps        = ["${module.all_sec_grps.aws_wsg_id}"]
 }
 
 module "petclinic-db" {
@@ -23,19 +25,20 @@ module "all_sec_grps" {
   region        = var.region
 }
 
-module "project-eks-cluster" {
-  source    = "../../modules/eks"
-  subnets   = ["${module.project-vpc.public_block1_id}", "${module.project-vpc.public_block2_id}", "${module.project-vpc.private_block1_id}"]
-  secgroups = ["${module.all_sec_grps.aws_wsg_id}"]
-  region    = var.region
-}
-
-module "fargate" {
-  source           = "../../modules/fargate"
-  fargate-subnets  = ["${module.project-vpc.private_block1_id}"]
-  eks-cluster-name = module.project-eks-cluster.eks-cluster-name
-  region           = var.region
-}
+### -- Currently in Testing ---
+#module "project-eks-cluster" {
+#  source    = "../../modules/eks"
+#  subnets   = ["${module.project-vpc.public_block1_id}", "${module.project-vpc.public_block2_id}", "${module.project-vpc.private_block1_id}"]
+#  secgroups = ["${module.all_sec_grps.aws_wsg_id}"]
+#  region    = var.region
+#}
+#
+#module "fargate" {
+#  source           = "../../modules/fargate"
+#  fargate-subnets  = ["${module.project-vpc.private_block1_id}"]
+#  eks-cluster-name = module.project-eks-cluster.eks-cluster-name
+#  region           = var.region
+#}
 
 module "codebuild" {
   source        = "../../modules/codebuild"
@@ -54,5 +57,16 @@ module "codebuild" {
 
 module "cloudwatch" {
   source = "../../modules/cloudwatch"
+  region = var.region
+  sns-topic-slack = module.sns.recoverytopic-arn
+}
+
+module "sns" {
+  source = "../../modules/sns"
+  slack-arn = module.lambda.lambda-slack-arn
+}
+
+module "lambda" {
+  source = "../../modules/lambda"
   region = var.region
 }

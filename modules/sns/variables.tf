@@ -1,3 +1,3 @@
-#variable "recovery-arn" {
-#    description = "The arn of the Recovery Lambda Function"
-#}
+variable "slack-arn" {
+    description = "The arn of the Slack Lambda Function"
+}
