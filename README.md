@@ -526,7 +526,9 @@ This dual process, executed at different points of the IaC runtime, exemplifies 
 
 Potential logo
 
-![NEW Logo](NEW PIXELART LOGO
+![NEW Logo](https://i.imgur.com/yipzmhX.gif)
+
+A sort of project mascot, riffing on the theme of 'delivery pipeline'.
 
 #### Potential Expansions
 
@@ -1006,7 +1008,7 @@ WHAT WE WANT TO ACHIEVE THAT WE DIDN'T MANAGE TO: A LIST
 
 KANBAN FOR IMAGINED FUTURE SPRINT
 
-![An imagined kanban board for the database sprint of an updated project](LINKTOFOLLOW
+![An imagined kanban board for the database sprint of an updated project](https://i.imgur.com/I59IeCB.png)
 
 To pair with this imagined sprint, a potential risk assessment has been provided, in simplified form, below:
 
