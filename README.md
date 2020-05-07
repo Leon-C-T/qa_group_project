@@ -32,7 +32,7 @@
 ### How Our Solution Works
 
 We use eks cli(eksctl) to create the fargate cluster and profile, and we then configure the auto load balancer controller in the cluster. This will allow access to the cluster via the alb to the ingress to the pods inside the fargate nodes. For the backend to have
-the necessary credentials to sign into the RDS databse, to do this we use kubernetes Secrets this allows access to the kubernetes pods to those credentials in an encrypted form.
+the necessary credentials to sign into the RDS databse, to do this we use kubernetes Secrets this allows access to the kubernetes pods to those credentials in an encrypted form. All of these steps apart from creating the cluster can be seen done in the code build build-spec.yaml file
 
 ### EKS Fargate Serverless Solution
 
