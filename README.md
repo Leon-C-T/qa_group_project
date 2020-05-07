@@ -4,7 +4,7 @@
 
 Written in reference to QAC - Final Project Brief (DevOps). This project is for the purpose of fulfilling the specification definition for the project assignment due Week 12 of the DevOps February 17 2020 intake cohort. The official working title of the project is Final Project (group), often reformatted to qa_group_project for tagging purposes.
 
-_**To view the presentation for this project, click [here](linkpending.**_
+_**To view the presentation for this project, click [here](https://docs.google.com/presentation/d/1w5ElbUm_zKdbT2KUwtO-kc3IhwYdiX78Gipt7SVR4PA/edit?usp=sharing)**_
 
 #### License
 
@@ -1074,7 +1074,7 @@ Currently, enthusiastically, most of our imagined risks require time and learnin
 13. Open a web browser and paste it in the address bar using the format `ipaddress:8080`.
     1. `cat` initial password as directed on the Jenkins welcome page
     2. Install plugins and sign up to Jenkins as directed.
-14. Follow the link [here](https://github.com/THC-QA/qa_group_project/tree/dev/spring-petclinic-res/src/main/resources/db/mysql) and ensure you copy and paste the .sql files to the created database. Use the endpoint provided to ssh to the resource.
+14. ~~Follow the link [here](https://github.com/THC-QA/qa_group_project/tree/dev/spring-petclinic-res/src/main/resources/db/mysql) and ensure you copy and paste the .sql files to the created database. Use the endpoint provided to ssh to the resource.~~ (This step now automated)
 15. Using the guide found [here](https://embeddedartistry.com/blog/2017/12/21/jenkins-kick-off-a-ci-build-with-github-push-notifications/) configure your copy of the repository to allow webhooks.
 16. Completing the procedure, use the guide found [here](https://dzone.com/articles/adding-a-github-webhook-in-your-jenkins-pipeline) to add the webhook to your Jenkins server.
 15. Run the Jenkins pipeline.
