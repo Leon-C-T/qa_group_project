@@ -50,16 +50,8 @@
 
 4. (Skip to step 6 if you followed step 3 to create an RDS database and CodeBuild) 
     - Create a publicly accessible RDS database
-    - Connect to RDS database
+    - Initialise database name as petclinic in additional configuration to create a database called be petclinic in the instance
     
-    - ```mysql -h xxxxxxx.amazonaws.com -P 3306 -u xxxxxx -p```
-    
-    - In the the spring.petclinic.rest file/repositary you will see initDb and populateDB located in 
-    
-    - ```spring-petclinic-rest/src/main/resources/db/mysql/```
-    
-    - Run those commands on your mysql client
-
 5. Create Code Build - Setup
     - Repositary https://github.com/THC-QA/qa_group_project.git the branch as serverless
     - Spec: Linux-Ubuntu-3GB memory 2vCPU-Standard3.0
@@ -86,3 +78,7 @@ aws iam create-policy \
 
 7. Run CodeBuild
     - You can rune Kubectl get Ingress to get public dns of the website
+    
+    
+ NOTE: You're Ingress may not automatically connect to the load balancer as it could fail due the frontend and backend not running
+ already by the time you create the ingress, to remedy this you could either manually delete the ingress with ```kubectl delete ingress ingress-connect``` and recreate it after the pods are running with ```kubectl apply -f kube-serv/ingress-service-am.yaml``` the other method is to put the sleep timer 2 - 5 minutes before creating the ingress this can be done on the build-spec.yaml file line 57
