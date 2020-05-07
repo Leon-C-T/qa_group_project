@@ -48,7 +48,7 @@ phases:
       - sleep 2
       - cat env1.txt
       - mysql -h ${url} -u ${username} -p${password} "petclinic" < initDB.sql
-      - mysql -h ${url} -u ${username} -p${password} "petclinic" < populate.sql
+      - mysql -h ${url} -u ${username} -p${password} "petclinic" < populateDB.sql
       - kubectl delete secret my-credentials || echo "already deleted or not existing"
       - kubectl create secret generic my-credentials --from-env-file=env1.txt
       - sleep 5
