@@ -13,6 +13,7 @@ apt-get install jenkins -y
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 apt install unzip -y
 ./aws/install 
+sudo apt install awscli -y
 echo 'jenkins ALL=(ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers
 i=1
 until [ $i -eq 0 ];

@@ -83,7 +83,7 @@ resource "aws_cloudwatch_event_target" "image-target" {
 resource "aws_cloudwatch_event_rule" "image" {
   name        = "check-for-new-snapshots"
   description = "Checks for new snapshots and triggers image conversion"
-
+  is_enabled = true
   event_pattern = <<PATTERN
 {
   "source": [

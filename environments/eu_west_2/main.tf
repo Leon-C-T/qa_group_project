@@ -22,7 +22,7 @@ module "jenkins-ec2" {
   instance-type  = var.instance-type-input
   jenkins-sec    = ["${module.all_sec_grps.aws_jenkins_sg_id}"]
   jenkins-subnet = module.project-vpc.public_block1_id
-  jenkins-key    = "your_key_here" ## Enter The Name of Your Key Created on AWS Here within the quotes.
+  jenkins-key    = "yourkeyhere" ## Enter The Name of Your Key Created on AWS Here within the quotes.
 }
 
 resource "null_resource" "test" { # edit: Diagnosed & Working (prev err: remote exec undiagnosed timeout)

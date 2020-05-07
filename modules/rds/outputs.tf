@@ -7,5 +7,6 @@ output "rds-username" {
 }
 
 output "rds-endpoint" {
-    value = aws_db_instance.petclinic.endpoint
+    # USE .address not .endpoint -> Endpoint = <address>:<port>
+    value = aws_db_instance.petclinic.address
 }
