@@ -553,16 +553,58 @@ In the diagram below is an imagined architecture for an expansion of the serverl
 
 The local testing runs eight url tests on the deployed container, utilising pytest.
 
+### Unit Testing
+
+The unit testing for backend runs 172 tests on the application, utilising maven. The unit testing for frontend runs 32 tests, using Angular. 
+
+To run the tests, copy in the following commands in the specified directory:
+
+In the spring-petclinic-res folder:
+```
+./mvnw test 
+```
+
+In the spring-petclinic-ang folder:
+```
+sudo apt update -y
+sudo apt install npm
+sudo npm install --save -dev @angular/cli@latest
+sudo npm install -g @angular/cli@latest
+sudo ng update
+sudo npm install
+sudo ng update @angular/cli @angular/core --allow-dirty --force
+sudo npm install --save-dev karma-phantomjs-launcher
+sudo npm install --save intl
+sudo npm i -D handlebars@4.5.0
+sudo ng test --browsers PhantomJS 
+```
+
 ### Final Report
+
+- The current state of testing confirms the frontend is functioning, backend is adding to a database and also verifies the presence of a deployed container. 
+
 
 ![Coverage report for URL testing](https://i.imgur.com/rCsUH2P.jpg)
 
 - The above coverage report details the completion of the URL testing conducted during standard pipeline runs.
 - The presence of the application at the presumed url endpoint results in a 100% coverage.
 - The url is automatically discovered via the command `curl https://ipinfo.io/ip`
-- The unit testing specified on the spring-clinic README was unable to be implemented due to the angular version 8.0.3. The command `ng tes` results in an `version out of date` error message.
-- Updated versions conflict with the core programming and result in similar errors.
-- The current state of testing merely confirms the presence of a deployed container, there is scope for additional database, unit, and frontend testing.
+- ~~The unit testing specified on the spring-clinic README was unable to be implemented due to the angular version 8.0.3. The command `ng test` results in an `version out of date` error message.~~ (This has now been implemented post presentation)
+- ~~Updated versions conflict with the core programming and result in similar errors.~~
+- ~~The current state of testing merely confirms the presence of a deployed container, there is scope for additional database, unit, and frontend testing.~~
+
+
+![Testing report for backend](https://i.imgur.com/otfCLRJ.png)
+
+- The above report indicates the completion of the database testing. 
+- Add, Update, Delete, Read been tested and has been successful. 
+
+
+![Coverage report for frontend](https://i.imgur.com/Kma7jBd.png)
+
+- The above report describes the completion of the frontend testing.
+- This shows how much of src folder in the spring-petclinic-angular directory has been tested.
+- To attain this report, you run the command `sudo ng test --browsers PhantomJS --code-coverage`
 
 ## Deployment
 
